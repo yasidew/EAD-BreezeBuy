@@ -76,5 +76,13 @@ namespace BreezeBuy.Controllers
             // return NoContent(); //success
             return Ok( new { message = "Inventory deleted successfully" });
         }
+
+        //Get low stock items
+        [HttpGet("low-stock")]
+        public async Task<ActionResult<List<Inventory>>> GetLowstockItems()
+        {
+            var lowStockItems =  await _inventoryService.GetLowStockItemsAsync();
+            return Ok(lowStockItems);
+        }
     }
 }

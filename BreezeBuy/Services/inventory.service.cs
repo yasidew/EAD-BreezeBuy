@@ -9,6 +9,7 @@ namespace BreezeBuy.Services
     public class InventoryService
     {
         private readonly IMongoCollection<Inventory> _inventoryCollection;
+        // private readonly OrderService _orderService;
 
         public InventoryService(IOptions<MongoDbSettings> mongoDbSettings)
         {
@@ -16,6 +17,7 @@ namespace BreezeBuy.Services
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _inventoryCollection = database.GetCollection<Inventory>(settings.InventoryCollectionName);
+            //  _orderService = orderService;
         }
 
         //get all inventory items
@@ -40,6 +42,27 @@ namespace BreezeBuy.Services
         //delete an inventory item
         public async Task RemoveAsync(string id) =>
             await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
+
+
+         // Check for low stock and return a list of items that need to be reordered
+        public async Task <List<Inventory>> GetLowStockItemsAsync()
+        {
+            var lowStockItems =  await _inventoryCollection.Find(inventory => inventory.QuantityAvailable < inventory.ReoderLevel).ToListAsync();
+            return lowStockItems;
+        }
+
+    //     public async Task RemoveAsync(string id)
+    // {
+    //     // Check if the product has any pending orders
+    //     var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(id);
+    //     if (hasPendingOrders)
+    //     {
+    //         throw new InvalidOperationException("Cannot remove product with pending orders.");
+    //     }
+
+    //     // If no pending orders, proceed with removal
+    //     await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
+    // }
 
     }
 }
