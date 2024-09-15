@@ -1,1 +1,1 @@
-# EAD-E-commerce
+# EAD-BreezeBuy
