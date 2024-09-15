@@ -12,7 +12,7 @@ namespace BreezeBuy.Services
 
         public InventoryService(IOptions<MongoDbSettings> mongoDbSettings)
         {
-            var settings =  mongoDbSettings.Value;
+            var settings = mongoDbSettings.Value;
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _inventoryCollection = database.GetCollection<Inventory>(settings.InventoryCollectionName);
@@ -27,12 +27,15 @@ namespace BreezeBuy.Services
             await _inventoryCollection.Find(inventory => inventory.Id == id).FirstOrDefaultAsync();
 
         //create a new inventory item
-        public async Task CreateAsync(Inventory newInventory) => 
+        public async Task CreateAsync(Inventory newInventory) =>
             await _inventoryCollection.InsertOneAsync(newInventory);
 
         //update an inventory item
-        public async Task UpdateAsync(string id, Inventory updatedInventory) =>
-            await _inventoryCollection.ReplaceOneAsync(inventory => inventory.Id == id, updatedInventory);
+        public async Task UpdateAsync(string id, Inventory updatedInventory)
+        {
+            updatedInventory.Id = id; // Ensure the Id is set correctly
+            await _inventoryCollection.ReplaceOneAsync(x => x.Id == id, updatedInventory);
+        }
 
         //delete an inventory item
         public async Task RemoveAsync(string id) =>

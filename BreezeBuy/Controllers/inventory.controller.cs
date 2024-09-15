@@ -58,7 +58,8 @@ namespace BreezeBuy.Controllers
                 return NotFound();
             }
             await _inventoryService.UpdateAsync(id, updatedInventory);
-            return NoContent(); //success
+            // return NoContent(); //success
+            return Ok( new { message = "Inventory updated successfully" });
         }
 
 
@@ -72,7 +73,8 @@ namespace BreezeBuy.Controllers
                 return NotFound();
             }
             await _inventoryService.RemoveAsync(id);
-            return NoContent(); //success
+            // return NoContent(); //success
+            return Ok( new { message = "Inventory deleted successfully" });
         }
     }
 }
