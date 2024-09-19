@@ -1,0 +1,6 @@
+@BreezeBuy_HostAddress = http://localhost:5030
+
+GET {{BreezeBuy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
