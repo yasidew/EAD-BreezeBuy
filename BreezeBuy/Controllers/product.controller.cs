@@ -72,24 +72,24 @@ namespace BreezeBuy.Controllers
         }
 
         // PUT: api/product/{id}
-[HttpPut("{id:length(24)}")]
-public async Task<ActionResult> Update(string id, Product updatedProduct)
-{
-    if (id != updatedProduct.Id)
-    {
-        return BadRequest("Product ID mismatch.");
-    }
+        [HttpPut("{id:length(24)}")]
+        public async Task<ActionResult> Update(string id, Product updatedProduct)
+        {
+            if (id != updatedProduct.Id)
+            {
+                return BadRequest("Product ID mismatch.");
+            }
 
-    try
-    {
-        await _productService.UpdateProductAsync(id, updatedProduct);
-        return Ok(new { message = "Product updated successfully" });
-    }
-    catch (KeyNotFoundException ex)
-    {
-        return NotFound(new { message = ex.Message });
-    }
-}
+            try
+            {
+                await _productService.UpdateProductAsync(id, updatedProduct);
+                return Ok(new { message = "Product updated successfully" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
 
 
     }

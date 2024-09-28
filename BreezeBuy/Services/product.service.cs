@@ -58,27 +58,27 @@ namespace BreezeBuy.Services
         }
 
         public async Task UpdateProductAsync(string productId, Product updatedProduct)
-{
-    // Check if the product exists
-    var existingProduct = await GetProductByIdAsync(productId);
-    if (existingProduct == null)
-    {
-        throw new KeyNotFoundException("Product not found.");
-    }
+        {
+            // Check if the product exists
+            var existingProduct = await GetProductByIdAsync(productId);
+            if (existingProduct == null)
+            {
+                throw new KeyNotFoundException("Product not found.");
+            }
 
-    // Check if the category exists
-    var category = await _categoryService.GetCategoryByIdAsync(updatedProduct.CategoryId);
-    if (category == null)
-    {
-        throw new KeyNotFoundException("Category not found.");
-    }
+            // Check if the category exists
+            var category = await _categoryService.GetCategoryByIdAsync(updatedProduct.CategoryId);
+            if (category == null)
+            {
+                throw new KeyNotFoundException("Category not found.");
+            }
 
-    // Update the product in the product collection
-    await _productCollection.ReplaceOneAsync(product => product.Id == productId, updatedProduct);
+            // Update the product in the product collection
+            await _productCollection.ReplaceOneAsync(product => product.Id == productId, updatedProduct);
 
-    // Update the product in the category's product list
-    await _categoryService.UpdateProductInCategoryAsync(updatedProduct.CategoryId, updatedProduct);
-}
+            // Update the product in the category's product list
+            await _categoryService.UpdateProductInCategoryAsync(updatedProduct.CategoryId, updatedProduct);
+        }
 
 
     }
