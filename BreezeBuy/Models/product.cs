@@ -31,5 +31,6 @@ namespace BreezeBuy.Models
         public string Description { get; set; } // Description of the product
         
         public decimal Price { get; set; } // Price of the product
+        public bool IsActive { get; set; } = true;
     }
 }

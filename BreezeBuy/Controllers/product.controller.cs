@@ -88,5 +88,19 @@ public async Task<ActionResult<Product>> Create(Product newProduct)
         //     await _productService.SetProductStatusAsync(id, isActive);
         //     return Ok(new { message = $"Product {(isActive ? "activated" : "deactivated")} successfully" });
         // }
+
+        [HttpPut("{id:length(24)}/status")]
+public async Task<ActionResult> SetProductStatus(string id, [FromQuery] bool isActive)
+{
+    var product = await _productService.GetProductByIdAsync(id);
+    if (product == null)
+    {
+        return NotFound();
+    }
+
+    await _productService.SetProductStatusAsync(id, isActive);
+    return Ok(new { message = $"Product {(isActive ? "activated" : "deactivated")} successfully" });
+}
+
     }
 }

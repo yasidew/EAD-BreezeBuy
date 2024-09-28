@@ -42,10 +42,11 @@ namespace BreezeBuy.Services
             await _productCollection.DeleteOneAsync(product => product.Id == id);
 
         // Activate or deactivate product
-        // public async Task SetProductStatusAsync(string id, bool isActive)
-        // {
-        //     var update = Builders<Product>.Update.Set(product => product.IsActive, isActive);
-        //     await _productCollection.UpdateOneAsync(product => product.Id == id, update);
-        // }
+        public async Task SetProductStatusAsync(string id, bool isActive)
+{
+    var update = Builders<Product>.Update.Set(product => product.IsActive, isActive);
+    await _productCollection.UpdateOneAsync(product => product.Id == id, update);
+}
+
     }
 }
