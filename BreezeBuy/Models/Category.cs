@@ -13,5 +13,7 @@ namespace BreezeBuy.Models
         public string Name { get; set; } // Category Name
 
         public List<Product> Products { get; set; } = new List<Product>(); // List of products in the category
+
+        public bool IsActive { get; set; } = true;
     }
 }

@@ -54,13 +54,49 @@ namespace BreezeBuy.Controllers
         }
 
         // GET: api/category
-        [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetAllCategories()
-        {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-            return Ok(categories);
-        }
+        // [HttpGet]
+        // public async Task<ActionResult<List<Category>>> GetAllCategories()
+        // {
+        //     var categories = await _categoryService.GetAllCategoriesAsync();
+        //     return Ok(categories);
+        // }
 
+        [HttpGet]
+public async Task<ActionResult<List<Category>>> GetAllCategories()
+{
+    var activeCategories = await _categoryService.GetAllActiveCategoriesAsync();
+    return Ok(activeCategories);
+}
+
+        // PUT: api/category/{categoryId}/activate
+[HttpPut("{categoryId:length(24)}/activate")]
+public async Task<ActionResult> ActivateCategory(string categoryId)
+{
+    try
+    {
+        await _categoryService.ActivateCategoryAsync(categoryId);
+        return Ok(new { message = "Category activated successfully" });
+    }
+    catch (KeyNotFoundException)
+    {
+        return NotFound(new { message = "Category not found" });
+    }
+}
+
+// PUT: api/category/{categoryId}/deactivate
+[HttpPut("{categoryId:length(24)}/deactivate")]
+public async Task<ActionResult> DeactivateCategory(string categoryId)
+{
+    try
+    {
+        await _categoryService.DeactivateCategoryAsync(categoryId);
+        return Ok(new { message = "Category deactivated successfully" });
+    }
+    catch (KeyNotFoundException)
+    {
+        return NotFound(new { message = "Category not found" });
+    }
+}
 
     }
 }

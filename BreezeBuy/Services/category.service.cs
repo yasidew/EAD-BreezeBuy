@@ -77,8 +77,37 @@ namespace BreezeBuy.Services
             await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
         }
 
-        public async Task<List<Category>> GetAllCategoriesAsync() =>
-    await _categoryCollection.Find(category => true).ToListAsync();
+    //     public async Task<List<Category>> GetAllCategoriesAsync() =>
+    // await _categoryCollection.Find(category => true).ToListAsync();
+
+    public async Task<List<Category>> GetAllActiveCategoriesAsync() =>
+    await _categoryCollection.Find(category => category.IsActive).ToListAsync();
+
+
+    public async Task ActivateCategoryAsync(string categoryId)
+{
+    var category = await GetCategoryByIdAsync(categoryId);
+    if (category == null)
+    {
+        throw new KeyNotFoundException("Category not found.");
+    }
+
+    category.IsActive = true;
+    await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
+}
+
+public async Task DeactivateCategoryAsync(string categoryId)
+{
+    var category = await GetCategoryByIdAsync(categoryId);
+    if (category == null)
+    {
+        throw new KeyNotFoundException("Category not found.");
+    }
+
+    category.IsActive = false;
+    await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
+}
+
 
 
     }
