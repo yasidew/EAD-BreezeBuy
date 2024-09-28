@@ -17,6 +17,6 @@ namespace BreezeBuy.Models
         public bool IsActive { get; set; } = true;
         
         [BsonRepresentation(BsonType.ObjectId)]
-        public string CategoryId { get; set; } // Reference to the category this product belongs to
+        public string? CategoryId { get; set; }// Reference to the category this product belongs to
     }
 }

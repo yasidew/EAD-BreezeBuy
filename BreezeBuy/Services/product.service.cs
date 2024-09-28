@@ -28,11 +28,8 @@ namespace BreezeBuy.Services
         public async Task<Product> GetProductByIdAsync(string id) =>
             await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
 
-        // Create new product
-    //     public async Task CreateProductAsync(Product newProduct) =>
-    // await _productCollection.InsertOneAsync(newProduct);
 
-// Create a new product and add it to both the Product collection and the Category
+        // Create a new product and add it to both the Product collection and the Category
         public async Task CreateProductAsync(Product newProduct)
         {
             // Check if the category exists
@@ -48,12 +45,6 @@ namespace BreezeBuy.Services
             // Add the product to the Category's product list
             await _categoryService.AddProductToCategoryAsync(newProduct.CategoryId, newProduct);
         }
-        // Update product
-        public async Task UpdateProductAsync(string id, Product updatedProduct)
-        {
-            updatedProduct.Id = id;
-            await _productCollection.ReplaceOneAsync(product => product.Id == id, updatedProduct);
-        }
 
         // Delete product
         public async Task DeleteProductAsync(string id) =>
@@ -61,10 +52,10 @@ namespace BreezeBuy.Services
 
         // Activate or deactivate product
         public async Task SetProductStatusAsync(string id, bool isActive)
-{
-    var update = Builders<Product>.Update.Set(product => product.IsActive, isActive);
-    await _productCollection.UpdateOneAsync(product => product.Id == id, update);
-}
+        {
+            var update = Builders<Product>.Update.Set(product => product.IsActive, isActive);
+            await _productCollection.UpdateOneAsync(product => product.Id == id, update);
+        }
 
     }
 }
