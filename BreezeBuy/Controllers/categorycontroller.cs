@@ -98,5 +98,26 @@ public async Task<ActionResult> DeactivateCategory(string categoryId)
     }
 }
 
+// GET: api/products/searchByCategory?categoryName=categoryName
+[HttpGet("/api/products/searchByCategory")]
+public async Task<ActionResult<List<Product>>> SearchProductsByCategoryName([FromQuery] string categoryName)
+{
+    try
+    {
+        var products = await _categoryService.SearchProductsByCategoryNameAsync(categoryName);
+        if (products == null || products.Count == 0)
+        {
+            return NotFound(new { message = "No products found in the specified category" });
+        }
+
+        return Ok(products);
+    }
+    catch (KeyNotFoundException)
+    {
+        return NotFound(new { message = "Category not found" });
+    }
+}
+
+
     }
 }

@@ -108,6 +108,19 @@ public async Task DeactivateCategoryAsync(string categoryId)
     await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
 }
 
+public async Task<List<Product>> SearchProductsByCategoryNameAsync(string categoryName)
+{
+    // Find the category by its name (case-insensitive search)
+    var category = await _categoryCollection.Find(c => c.Name.ToLower() == categoryName.ToLower()).FirstOrDefaultAsync();
+    
+    if (category == null)
+    {
+        throw new KeyNotFoundException("Category not found.");
+    }
+
+    return category.Products;
+}
+
 
 
     }
