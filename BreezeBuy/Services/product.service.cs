@@ -86,23 +86,23 @@ namespace BreezeBuy.Services
         }
 
         // Update the product status (active or inactive)
-public async Task SetProductStatusAsync(string id, bool isActive)
-{
-    var product = await GetProductByIdAsync(id);
-    if (product == null)
-    {
-        throw new KeyNotFoundException("Product not found.");
-    }
+        public async Task SetProductStatusAsync(string id, bool isActive)
+        {
+            var product = await GetProductByIdAsync(id);
+            if (product == null)
+            {
+                throw new KeyNotFoundException("Product not found.");
+            }
 
-    var update = Builders<Product>.Update.Set(p => p.IsActive, isActive);
-    await _productCollection.UpdateOneAsync(p => p.Id == id, update);
-}
+            var update = Builders<Product>.Update.Set(p => p.IsActive, isActive);
+            await _productCollection.UpdateOneAsync(p => p.Id == id, update);
+        }
 
-public async Task<List<Product>> SearchProductsByNameAsync(string productName)
-{
-    var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(productName, "i")); // Case-insensitive search
-    return await _productCollection.Find(filter).ToListAsync();
-}
+        public async Task<List<Product>> SearchProductsByNameAsync(string productName)
+        {
+            var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(productName, "i")); // Case-insensitive search
+            return await _productCollection.Find(filter).ToListAsync();
+        }
 
 
     }

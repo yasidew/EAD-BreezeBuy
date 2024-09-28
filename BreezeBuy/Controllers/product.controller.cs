@@ -95,18 +95,18 @@ namespace BreezeBuy.Controllers
         }
 
         // GET: api/product/search?name={productName}
-[HttpGet("search")]
-public async Task<ActionResult<List<Product>>> SearchByName(string name)
-{
-    var products = await _productService.SearchProductsByNameAsync(name);
-    
-    if (products == null || products.Count == 0)
-    {
-        return NotFound(new { message = "No products found with the given name" });
-    }
-    
-    return Ok(products);
-}
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Product>>> SearchByName(string name)
+        {
+            var products = await _productService.SearchProductsByNameAsync(name);
+
+            if (products == null || products.Count == 0)
+            {
+                return NotFound(new { message = "No products found with the given name" });
+            }
+
+            return Ok(products);
+        }
 
 
     }
