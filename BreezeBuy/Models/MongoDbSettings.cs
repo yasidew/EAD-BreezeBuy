@@ -10,5 +10,6 @@ namespace BreezeBuy.Models
 
 		public string VendorCollectionName { get; set; }
         public string ProductCollectionName { get; set; }
+        public string CategoryCollectionName { get; set; }
 	}
 }

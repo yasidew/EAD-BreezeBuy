@@ -17,6 +17,22 @@ namespace BreezeBuy.Controllers
             _productService = productService;
         }
 
+        // POST: api/product
+        [HttpPost]
+        public async Task<ActionResult<Product>> Create(Product newProduct)
+        {
+            try
+            {
+                await _productService.CreateProductAsync(newProduct);
+                return CreatedAtRoute("GetProduct", new { id = newProduct.Id.ToString() }, newProduct);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
         // // GET: api/product
         // [HttpGet]
         // public async Task<ActionResult<List<Product>>> Get()
@@ -50,13 +66,13 @@ public async Task<ActionResult<List<Product>>> Get()
         }
 
         // POST: api/product
-        [HttpPost]
-public async Task<ActionResult<Product>> Create(Product newProduct)
-{
-    await _productService.CreateProductAsync(newProduct);
-    // Return the newly created product and its generated ID
-    return CreatedAtRoute("GetProduct", new { id = newProduct.Id }, newProduct);
-}
+//         [HttpPost]
+// public async Task<ActionResult<Product>> Create(Product newProduct)
+// {
+//     await _productService.CreateProductAsync(newProduct);
+//     // Return the newly created product and its generated ID
+//     return CreatedAtRoute("GetProduct", new { id = newProduct.Id }, newProduct);
+// }
 
 
         // PUT: api/product/{id}
