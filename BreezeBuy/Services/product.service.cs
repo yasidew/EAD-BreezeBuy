@@ -46,17 +46,6 @@ namespace BreezeBuy.Services
             await _categoryService.AddProductToCategoryAsync(newProduct.CategoryId, newProduct);
         }
 
-        // Delete product
-        public async Task DeleteProductAsync(string id) =>
-            await _productCollection.DeleteOneAsync(product => product.Id == id);
-
-        // Activate or deactivate product
-        public async Task SetProductStatusAsync(string id, bool isActive)
-        {
-            var update = Builders<Product>.Update.Set(product => product.IsActive, isActive);
-            await _productCollection.UpdateOneAsync(product => product.Id == id, update);
-        }
-
         public async Task UpdateProductAsync(string productId, Product updatedProduct)
         {
             // Check if the product exists
@@ -80,6 +69,21 @@ namespace BreezeBuy.Services
             await _categoryService.UpdateProductInCategoryAsync(updatedProduct.CategoryId, updatedProduct);
         }
 
+        public async Task DeleteProductAsync(string id)
+{
+    // Find the product
+    var product = await GetProductByIdAsync(id);
+    if (product == null)
+    {
+        throw new KeyNotFoundException("Product not found.");
+    }
+
+    // Delete the product from the Product collection
+    await _productCollection.DeleteOneAsync(p => p.Id == id);
+
+    // Remove the product from the associated category
+    await _categoryService.RemoveProductFromCategoryAsync(product.CategoryId, id);
+}
 
     }
 }

@@ -57,19 +57,7 @@ namespace BreezeBuy.Controllers
             return Ok(product);
         }
 
-        // DELETE: api/product/{id}
-        [HttpDelete("{id:length(24)}")]
-        public async Task<ActionResult> Delete(string id)
-        {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
 
-            await _productService.DeleteProductAsync(id);
-            return Ok(new { message = "Product deleted successfully" });
-        }
 
         // PUT: api/product/{id}
         [HttpPut("{id:length(24)}")]
@@ -91,6 +79,20 @@ namespace BreezeBuy.Controllers
             }
         }
 
+        // DELETE: api/product/{id}
+[HttpDelete("{id:length(24)}")]
+public async Task<ActionResult> Delete(string id)
+{
+    try
+    {
+        await _productService.DeleteProductAsync(id);
+        return Ok(new { message = "Product deleted successfully" });
+    }
+    catch (KeyNotFoundException ex)
+    {
+        return NotFound(new { message = ex.Message });
+    }
+}
 
     }
 }

@@ -64,5 +64,21 @@ namespace BreezeBuy.Services
             await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
         }
 
+        public async Task RemoveProductFromCategoryAsync(string categoryId, string productId)
+{
+    var category = await GetCategoryByIdAsync(categoryId);
+    if (category == null)
+    {
+        throw new KeyNotFoundException("Category not found.");
+    }
+
+    // Remove the product from the category's product list
+    category.Products.RemoveAll(p => p.Id == productId);
+
+    // Update the category in the database
+    await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
+}
+
+
     }
 }
