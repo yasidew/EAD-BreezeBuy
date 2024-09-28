@@ -24,8 +24,9 @@ builder.Services.AddSingleton<MongoDbContext>();
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
 
-// For product
-//builder.Services.AddSingleton<ProductService>();
+
+// Register the ProductService
+builder.Services.AddSingleton<ProductService>();
 
 
 // for vendor
