@@ -70,20 +70,34 @@ namespace BreezeBuy.Services
         }
 
         public async Task DeleteProductAsync(string id)
+        {
+            // Find the product
+            var product = await GetProductByIdAsync(id);
+            if (product == null)
+            {
+                throw new KeyNotFoundException("Product not found.");
+            }
+
+            // Delete the product from the Product collection
+            await _productCollection.DeleteOneAsync(p => p.Id == id);
+
+            // Remove the product from the associated category
+            await _categoryService.RemoveProductFromCategoryAsync(product.CategoryId, id);
+        }
+
+        // Update the product status (active or inactive)
+public async Task SetProductStatusAsync(string id, bool isActive)
 {
-    // Find the product
     var product = await GetProductByIdAsync(id);
     if (product == null)
     {
         throw new KeyNotFoundException("Product not found.");
     }
 
-    // Delete the product from the Product collection
-    await _productCollection.DeleteOneAsync(p => p.Id == id);
-
-    // Remove the product from the associated category
-    await _categoryService.RemoveProductFromCategoryAsync(product.CategoryId, id);
+    var update = Builders<Product>.Update.Set(p => p.IsActive, isActive);
+    await _productCollection.UpdateOneAsync(p => p.Id == id, update);
 }
+
 
     }
 }

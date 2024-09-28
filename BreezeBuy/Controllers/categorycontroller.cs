@@ -17,13 +17,6 @@ namespace BreezeBuy.Controllers
             _categoryService = categoryService;
         }
 
-        // GET: api/category
-        [HttpGet]
-        public async Task<ActionResult<List<Category>>> Get()
-        {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-            return Ok(categories);
-        }
 
         // GET: api/category/{id}
         [HttpGet("{id:length(24)}", Name = "GetCategory")]
@@ -59,5 +52,15 @@ namespace BreezeBuy.Controllers
                 return NotFound(new { message = "Category not found" });
             }
         }
+
+        // GET: api/category
+        [HttpGet]
+        public async Task<ActionResult<List<Category>>> GetAllCategories()
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            return Ok(categories);
+        }
+
+
     }
 }

@@ -18,9 +18,7 @@ namespace BreezeBuy.Services
             _categoryCollection = database.GetCollection<Category>(settings.CategoryCollectionName);
         }
 
-        // Get all categories
-        public async Task<List<Category>> GetAllCategoriesAsync() =>
-            await _categoryCollection.Find(category => true).ToListAsync();
+
 
         // Get category by ID
         public async Task<Category> GetCategoryByIdAsync(string id) =>
@@ -65,19 +63,22 @@ namespace BreezeBuy.Services
         }
 
         public async Task RemoveProductFromCategoryAsync(string categoryId, string productId)
-{
-    var category = await GetCategoryByIdAsync(categoryId);
-    if (category == null)
-    {
-        throw new KeyNotFoundException("Category not found.");
-    }
+        {
+            var category = await GetCategoryByIdAsync(categoryId);
+            if (category == null)
+            {
+                throw new KeyNotFoundException("Category not found.");
+            }
 
-    // Remove the product from the category's product list
-    category.Products.RemoveAll(p => p.Id == productId);
+            // Remove the product from the category's product list
+            category.Products.RemoveAll(p => p.Id == productId);
 
-    // Update the category in the database
-    await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
-}
+            // Update the category in the database
+            await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
+        }
+
+        public async Task<List<Category>> GetAllCategoriesAsync() =>
+    await _categoryCollection.Find(category => true).ToListAsync();
 
 
     }
