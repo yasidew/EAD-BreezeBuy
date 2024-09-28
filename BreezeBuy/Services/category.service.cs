@@ -42,5 +42,27 @@ namespace BreezeBuy.Services
             category.Products.Add(product);
             await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
         }
+
+        public async Task UpdateProductInCategoryAsync(string categoryId, Product updatedProduct)
+{
+    var category = await GetCategoryByIdAsync(categoryId);
+    if (category == null)
+    {
+        throw new KeyNotFoundException("Category not found.");
+    }
+
+    // Find and replace the existing product in the category
+    var productIndex = category.Products.FindIndex(p => p.Id == updatedProduct.Id);
+    if (productIndex == -1)
+    {
+        throw new KeyNotFoundException("Product not found in the category.");
+    }
+
+    category.Products[productIndex] = updatedProduct;
+
+    // Update the category with the modified product list
+    await _categoryCollection.ReplaceOneAsync(c => c.Id == categoryId, category);
+}
+
     }
 }
