@@ -17,13 +17,25 @@ namespace BreezeBuy.Controllers
             _productService = productService;
         }
 
-        // GET: api/product
-        [HttpGet]
-        public async Task<ActionResult<List<Product>>> Get()
-        {
-            var products = await _productService.GetAllProductsAsync();
-            return Ok(products);
-        }
+        // // GET: api/product
+        // [HttpGet]
+        // public async Task<ActionResult<List<Product>>> Get()
+        // {
+        //     var products = await _productService.GetAllProductsAsync();
+        //     return Ok(products);
+        // }
+
+// GET: api/product
+[HttpGet]
+public async Task<ActionResult<List<Product>>> Get()
+{
+    var products = await _productService.GetAllProductsAsync();
+    
+    // Filter to only include active products
+    var activeProducts = products.Where(product => product.IsActive).ToList();
+
+    return Ok(activeProducts);
+}
 
         // GET: api/product/{id}
         [HttpGet("{id:length(24)}", Name = "GetProduct")]
@@ -75,19 +87,6 @@ public async Task<ActionResult<Product>> Create(Product newProduct)
             return Ok(new { message = "Product deleted successfully" });
         }
 
-        // PUT: api/product/{id}/status
-        // [HttpPut("{id:length(24)}/status")]
-        // public async Task<ActionResult> SetProductStatus(string id, [FromQuery] bool isActive)
-        // {
-        //     var product = await _productService.GetProductByIdAsync(id);
-        //     if (product == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     await _productService.SetProductStatusAsync(id, isActive);
-        //     return Ok(new { message = $"Product {(isActive ? "activated" : "deactivated")} successfully" });
-        // }
 
         [HttpPut("{id:length(24)}/status")]
 public async Task<ActionResult> SetProductStatus(string id, [FromQuery] bool isActive)
