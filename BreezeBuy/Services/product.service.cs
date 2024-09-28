@@ -98,6 +98,12 @@ public async Task SetProductStatusAsync(string id, bool isActive)
     await _productCollection.UpdateOneAsync(p => p.Id == id, update);
 }
 
+public async Task<List<Product>> SearchProductsByNameAsync(string productName)
+{
+    var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(productName, "i")); // Case-insensitive search
+    return await _productCollection.Find(filter).ToListAsync();
+}
+
 
     }
 }
