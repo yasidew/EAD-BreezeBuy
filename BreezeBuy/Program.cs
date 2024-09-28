@@ -28,6 +28,8 @@ builder.Services.AddSingleton<InventoryService>();
 // Register the ProductService
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<CategoryService>();
+builder.Services.AddSingleton<CartService>();
+builder.Services.AddSingleton<OrderService>();
 
 
 // for vendor
