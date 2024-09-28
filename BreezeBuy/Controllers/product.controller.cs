@@ -39,11 +39,13 @@ namespace BreezeBuy.Controllers
 
         // POST: api/product
         [HttpPost]
-        public async Task<ActionResult<Product>> Create(Product newProduct)
-        {
-            await _productService.CreateProductAsync(newProduct);
-            return CreatedAtRoute("GetProduct", new { id = newProduct.Id.ToString() }, newProduct);
-        }
+public async Task<ActionResult<Product>> Create(Product newProduct)
+{
+    await _productService.CreateProductAsync(newProduct);
+    // Return the newly created product and its generated ID
+    return CreatedAtRoute("GetProduct", new { id = newProduct.Id }, newProduct);
+}
+
 
         // PUT: api/product/{id}
         [HttpPut("{id:length(24)}")]
@@ -74,17 +76,17 @@ namespace BreezeBuy.Controllers
         }
 
         // PUT: api/product/{id}/status
-        [HttpPut("{id:length(24)}/status")]
-        public async Task<ActionResult> SetProductStatus(string id, [FromQuery] bool isActive)
-        {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+        // [HttpPut("{id:length(24)}/status")]
+        // public async Task<ActionResult> SetProductStatus(string id, [FromQuery] bool isActive)
+        // {
+        //     var product = await _productService.GetProductByIdAsync(id);
+        //     if (product == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            await _productService.SetProductStatusAsync(id, isActive);
-            return Ok(new { message = $"Product {(isActive ? "activated" : "deactivated")} successfully" });
-        }
+        //     await _productService.SetProductStatusAsync(id, isActive);
+        //     return Ok(new { message = $"Product {(isActive ? "activated" : "deactivated")} successfully" });
+        // }
     }
 }
