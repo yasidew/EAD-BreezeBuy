@@ -19,7 +19,9 @@ namespace BreezeBuy.Controllers
             _userCollection = context.Users;
         }
 
-        [HttpPost("assign-role")]
+		// Assign Role
+		// "https://localhost:7260/Role/assign-role"
+		[HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleModel model)
         {
             var user = await _userCollection.Find(u => u.Username == model.Username).FirstOrDefaultAsync();

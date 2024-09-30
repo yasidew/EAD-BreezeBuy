@@ -27,7 +27,10 @@ namespace BreezeBuy.Controllers
             _jwtSettings = jwtSettings.Value;
         }
 
-        [HttpPost("register")]
+		// Register Api Endpoint
+		// "https://localhost:7260/Auth/register"
+
+		[HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var user = new User
@@ -41,7 +44,9 @@ namespace BreezeBuy.Controllers
             return Ok();
         }
 
-        [HttpPost("login")]
+		// Login Api Endpoint
+		// "https://localhost:7260/Auth/login"
+		[HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userCollection.Find(u => u.Username == model.Username).FirstOrDefaultAsync();
@@ -71,7 +76,8 @@ namespace BreezeBuy.Controllers
             return Ok(new { Token = tokenString });
         }
 
-		
+		// Current User
+		// "https://localhost:7260/Auth/me"
 		[HttpGet("me")]
 		public async Task<IActionResult> GetLoggedInUser()
 		{
