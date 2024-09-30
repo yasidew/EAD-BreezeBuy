@@ -29,7 +29,7 @@ builder.Services.AddSingleton<InventoryService>();
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<CategoryService>();
 builder.Services.AddSingleton<CartService>();
-builder.Services.AddSingleton<OrderService>();
+// builder.Services.AddSingleton<OrderService>();
 
 
 // for vendor

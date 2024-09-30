@@ -1,25 +1,19 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
-
 namespace BreezeBuy.Models
 {
-    public class Cart
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-
-        public string CustomerId { get; set; }  // ID of the customer
-
-        public List<CartItem> Items { get; set; } = new List<CartItem>(); // List of products in the cart
-    }
-
     public class CartItem
     {
-        public string ProductId { get; set; }  // ID of the product
-        public string ProductName { get; set; }  // Product name
-        public int Quantity { get; set; }  // Quantity of the product
-        public decimal Price { get; set; }  // Price of the product
+        public string ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }  // Quantity of this product in the cart
+        public decimal TotalPrice => Price * Quantity;  // Total price for this cart item
+    }
+
+    public class Cart
+    {
+        public string Id { get; set; }  // Unique Cart ID
+        public string UserId { get; set; }  // Customer ID associated with the cart
+        public List<CartItem> Items { get; set; } = new List<CartItem>();
+        public decimal TotalAmount => Items.Sum(item => item.TotalPrice);  // Total amount of the cart
     }
 }

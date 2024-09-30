@@ -1,6 +1,7 @@
 using BreezeBuy.Models;
 using BreezeBuy.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BreezeBuy.Controllers
@@ -16,25 +17,36 @@ namespace BreezeBuy.Controllers
             _cartService = cartService;
         }
 
-        // POST: api/cart/{customerId}/add
-        [HttpPost("{customerId}/add")]
-        public async Task<ActionResult> AddToCart(string customerId, CartItem newItem)
+        // POST: api/Cart/AddMultipleItems
+        [HttpPost("AddMultipleItems")]
+        public async Task<IActionResult> AddMultipleItems([FromBody] AddMultipleItemsRequest request)
         {
-            await _cartService.AddItemToCartAsync(customerId, newItem);
-            return Ok(new { message = "Item added to cart successfully" });
-        }
-
-        // GET: api/cart/{customerId}
-        [HttpGet("{customerId}")]
-        public async Task<ActionResult<Cart>> GetCart(string customerId)
-        {
-            var cart = await _cartService.GetCartByCustomerIdAsync(customerId);
-            if (cart == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { message = "Cart not found" });
+                return BadRequest(ModelState);
             }
 
-            return Ok(cart);
+            try
+            {
+                // Add multiple products to the cart
+                await _cartService.AddMultipleProductsToCartAsync(request.UserId, request.Items);
+                return Ok(new { message = "Products added to cart successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+    }
+
+    // Request model for adding multiple items to the cart
+    public class AddMultipleItemsRequest
+    {
+        public string UserId { get; set; }
+        public List<CartItem> Items { get; set; }
     }
 }

@@ -18,5 +18,6 @@ namespace BreezeBuy.Models
 
         [BsonRepresentation(BsonType.ObjectId)]
         public string? CategoryId { get; set; }// Reference to the category this product belongs to
+        public int Quantity { get; set; }
     }
 }
