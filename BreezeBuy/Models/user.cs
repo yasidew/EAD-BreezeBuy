@@ -12,13 +12,15 @@ namespace BreezeBuy.Models
         [BsonElement("username")]
         public string Username { get; set; }
 
-		[BsonElement("email")]
-		public string Email { get; set; }
+        [BsonElement("email")]
+        public string Email { get; set; }
 
-		[BsonElement("passwordHash")]
+        [BsonElement("passwordHash")]
         public string PasswordHash { get; set; }
 
         [BsonElement("roles")]
         public List<string> Roles { get; set; } = new List<string>();
+        [BsonElement("status")]
+        public string Status { get; set; } = "active";
     }
 }
