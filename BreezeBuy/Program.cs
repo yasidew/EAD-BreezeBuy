@@ -11,6 +11,7 @@ builder.Services.Configure<MongoDbSettings>(
 
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
+// builder.Services.AddSingleton<OrderService>();
 
 // Add Controllers
 builder.Services.AddControllers();
