@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Configure MongoDB settings
+
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
@@ -24,6 +25,14 @@ builder.Services.AddSingleton<MongoDbContext>();
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
 // builder.Services.AddSingleton<OrderService>();
+
+
+// Register the ProductService
+builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<CategoryService>();
+builder.Services.AddSingleton<CartService>();
+// builder.Services.AddSingleton<OrderService>();
+
 
 // for vendor
 builder.Services.AddSingleton<VendorService>();
