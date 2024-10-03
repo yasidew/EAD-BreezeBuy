@@ -1,6 +1,7 @@
 using BreezeBuy.Data;
 using BreezeBuy.Models;
 using BreezeBuy.Services;
+using BreezeBuy.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -22,9 +23,14 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
+// builder.Services.AddSingleton<OrderService>();
 
 // for vendor
 builder.Services.AddSingleton<VendorService>();
+
+// Add Order Service and Repository
+builder.Services.AddSingleton<OrderService>();
+builder.Services.AddSingleton<OrderRepository>();
 
 // builder.Services.AddSingleton<UseSer>();
 
