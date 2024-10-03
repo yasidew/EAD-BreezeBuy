@@ -6,6 +6,7 @@ namespace BreezeBuy.Models
         public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }
         public string InventoryCollectionName { get; set; }
+        public string OrderCollectionName { get; set; }
         public string UserCollectionName { get; set; }
 
 		public string VendorCollectionName { get; set; }

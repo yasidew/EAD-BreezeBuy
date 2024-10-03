@@ -1,6 +1,7 @@
 using BreezeBuy.Data;
 using BreezeBuy.Models;
 using BreezeBuy.Services;
+using BreezeBuy.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -23,6 +24,7 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
+// builder.Services.AddSingleton<OrderService>();
 
 
 // Register the ProductService
@@ -34,6 +36,10 @@ builder.Services.AddSingleton<CartService>();
 
 // for vendor
 builder.Services.AddSingleton<VendorService>();
+
+// Add Order Service and Repository
+builder.Services.AddSingleton<OrderService>();
+builder.Services.AddSingleton<OrderRepository>();
 
 // builder.Services.AddSingleton<UseSer>();
 
@@ -62,6 +68,7 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+	options.AddPolicy("VendorOnly", policy => policy.RequireRole("Vendor"));
 	options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
 });
 

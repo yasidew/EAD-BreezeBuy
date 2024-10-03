@@ -51,10 +51,10 @@ namespace BreezeBuy.Controllers
 
 		// Create new vendor: POST api/vendor
 		[HttpPost]
-		public async Task<ActionResult<Vendor>> Create(Vendor newVendor)
+		public async Task<ActionResult<Vendor>> Create([FromBody] Vendor newVendor)
 		{
 			await _vendorService.CreateAsync(newVendor);
-			return CreatedAtRoute("GetVendor", new { id = newVendor.Id.ToString() }, newVendor);
+			return CreatedAtRoute("GetVendorDetail", new { id = newVendor.Id.ToString() }, newVendor);
 		}
 
 		// Update vendor: PUT api/vendor/{id}
@@ -173,6 +173,13 @@ namespace BreezeBuy.Controllers
 
 			// Return the feedback as a response
 			return Ok(comment);
+		}
+
+		[HttpGet("sorted-vendors")]
+		public async Task<IActionResult> GetSortedVendors()
+		{
+			var sortedVendors = await _vendorService.GetVendorsSortedByRatingAsync();
+			return Ok(sortedVendors);
 		}
 	}
 }

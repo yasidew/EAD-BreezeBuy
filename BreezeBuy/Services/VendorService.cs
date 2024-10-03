@@ -117,6 +117,14 @@ namespace BreezeBuy.Services
 			return null; // Return null if vendor or comment doesn't exist
 		}
 
+		public async Task<List<Vendor>> GetVendorsSortedByRatingAsync()
+		{
+			// Sort vendors by AverageRating in descending order
+			return await _vendorCollection
+				.Find(vendor => true)
+				.SortByDescending(v => v.AverageRating)
+				.ToListAsync();
+		}
 
 	}
 

@@ -20,7 +20,9 @@ namespace BreezeBuy.Models
 
         [BsonElement("roles")]
         public List<string> Roles { get; set; } = new List<string>();
+
         [BsonElement("status")]
         public string Status { get; set; } = "active";
     }
+
 }
