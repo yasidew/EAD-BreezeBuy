@@ -1,5 +1,6 @@
 using BreezeBuy.Models;
 using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 
 namespace BreezeBuy.Repositories
 {
@@ -7,8 +8,11 @@ namespace BreezeBuy.Repositories
     {
         private readonly IMongoCollection<Order> _orders;
 
-        public OrderRepository(MongoDbSettings settings)
+        // Inject IOptions<MongoDbSettings> instead of MongoDbSettings directly
+        public OrderRepository(IOptions<MongoDbSettings> mongoDbSettings)
         {
+            // Use the Value property to get the actual MongoDbSettings object
+            var settings = mongoDbSettings.Value;
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _orders = database.GetCollection<Order>("Orders");
