@@ -98,6 +98,12 @@ namespace BreezeBuy.Services
             await _productCollection.UpdateOneAsync(p => p.Id == id, update);
         }
 
+        public async Task<Product> GetProductByNameAsync(string name)
+        {
+            return await _productCollection.Find(p => p.Name == name).FirstOrDefaultAsync();
+        }
+
+
         public async Task<List<Product>> SearchProductsByNameAsync(string productName)
         {
             var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(productName, "i")); // Case-insensitive search
