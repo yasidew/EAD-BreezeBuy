@@ -1,6 +1,7 @@
 using BreezeBuy.Models;
 using BreezeBuy.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace BreezeBuy.Controllers
 {
@@ -37,6 +38,12 @@ namespace BreezeBuy.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
+            // Generate a new Id if it's not provided
+            if (string.IsNullOrEmpty(order.Id))
+            {
+                order.Id = ObjectId.GenerateNewId().ToString();
+            }
+
             await _orderService.CreateOrderAsync(order);
             return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
         }
