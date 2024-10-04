@@ -8,8 +8,8 @@ namespace BreezeBuy.Models
     public class Order
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; }
 
         [BsonElement("orderNumber")]
         public string OrderNumber { get; set; }
@@ -20,8 +20,9 @@ namespace BreezeBuy.Models
         [BsonElement("items")]
         public List<OrderItem> Items { get; set; }
 
+        // Set default status to "pending"
         [BsonElement("status")]
-        public string Status { get; set; }
+        public string Status { get; set; } = "Pending";
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
