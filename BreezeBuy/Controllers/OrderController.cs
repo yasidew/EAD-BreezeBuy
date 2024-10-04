@@ -45,8 +45,16 @@ namespace BreezeBuy.Controllers
                 order.Id = ObjectId.GenerateNewId().ToString();
             }
 
-            await _orderService.CreateOrderAsync(order);
-            return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            try
+            {
+                await _orderService.CreateOrderAsync(order);
+                return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle insufficient stock or other business logic exceptions
+                return BadRequest(new { message = ex.Message });
+            }
 
         }
 
