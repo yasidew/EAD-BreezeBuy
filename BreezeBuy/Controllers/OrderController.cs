@@ -34,13 +34,6 @@ namespace BreezeBuy.Controllers
             return order;
         }
 
-        // [HttpPost]
-        // public async Task<ActionResult<Order>> CreateOrder(Order order)
-        // {
-        //     await _orderService.CreateOrderAsync(order);
-        //     return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
-        // }
-
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
