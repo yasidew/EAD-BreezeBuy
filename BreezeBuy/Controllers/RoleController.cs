@@ -42,10 +42,6 @@ namespace BreezeBuy.Controllers
 		[HttpGet("get-users")]
 		public async Task<IActionResult> GetUsers(int page = 1, int pageSize = 5)
 		{
-			/*
-			var users = await _userCollection.Find(_ => true).ToListAsync();
-			return Ok(users);*/
-
 			var skip = (page - 1) * pageSize;
 			var users = await _userCollection
 				.Find(_ => true)
