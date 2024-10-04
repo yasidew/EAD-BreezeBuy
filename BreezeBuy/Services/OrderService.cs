@@ -36,5 +36,20 @@ namespace BreezeBuy.Services
         {
             await _orderRepository.DeleteOrderAsync(id);
         }
+
+
+         // New method to check for pending orders for a product
+        public async Task<bool> HasPendingOrdersForProduct(string productId)
+        {
+            var orders = await _orderRepository.GetOrdersAsync();
+            foreach (var order in orders)
+            {
+                if (order.Items.Any(item => item.ProductId == productId && order.Status == "Pending"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
