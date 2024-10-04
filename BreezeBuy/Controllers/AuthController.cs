@@ -84,7 +84,7 @@ namespace BreezeBuy.Controllers
             return Ok(new { Token = tokenString });
         }
 
-		// Current User yyy
+		// Current User 
 		// "https://localhost:7260/Auth/me"
 		[HttpGet("me")]
 		public async Task<IActionResult> GetLoggedInUser()
