@@ -2,6 +2,7 @@ using BreezeBuy.Models;
 using BreezeBuy.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using MongoDB.Bson;
 
 namespace BreezeBuy.Controllers
 {
@@ -26,43 +27,29 @@ namespace BreezeBuy.Controllers
         public async Task<ActionResult<Order>> GetOrderById(string id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-
             if (order == null)
             {
                 return NotFound();
             }
-
             return order;
         }
 
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
-
-            // Generate a new Id if it's not provided
             if (string.IsNullOrEmpty(order.Id))
             {
                 order.Id = ObjectId.GenerateNewId().ToString();
             }
 
-            try
-            {
-                await _orderService.CreateOrderAsync(order);
-                return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
-            }
-            catch (InvalidOperationException ex)
-            {
-                // Handle insufficient stock or other business logic exceptions
-                return BadRequest(new { message = ex.Message });
-            }
-
+            await _orderService.CreateOrderAsync(order);
+            return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
         }
 
         [HttpPut("{id:length(24)}")]
         public async Task<IActionResult> UpdateOrder(string id, Order orderIn)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-
             if (order == null)
             {
                 return NotFound();
@@ -76,7 +63,6 @@ namespace BreezeBuy.Controllers
         public async Task<IActionResult> DeleteOrder(string id)
         {
             var order = await _orderService.GetOrderByIdAsync(id);
-
             if (order == null)
             {
                 return NotFound();
@@ -85,5 +71,42 @@ namespace BreezeBuy.Controllers
             await _orderService.DeleteOrderAsync(id);
             return NoContent();
         }
+
+        [HttpPut("purchase/{id:length(24)}")]
+        public async Task<IActionResult> PurchaseOrder(string id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Set order status to "purchased"
+            order.Status = "purchased";
+            await _orderService.UpdateOrderAsync(id, order);
+
+            return NoContent();
+        }
+
+        [HttpPut("deliver/{id:length(24)}")]
+        public async Task<IActionResult> DeliverOrder(string id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Set order status to "delivered"
+            order.Status = "delivered";
+            await _orderService.UpdateOrderAsync(id, order);
+
+            return NoContent();
+        }
+
     }
 }
+
+

@@ -18,52 +18,35 @@ namespace BreezeBuy.Controllers
         }
 
         // POST: api/product
-        // [HttpPost]
-        // public async Task<ActionResult<Product>> Create(Product newProduct)
-        // {
-        //     try
-        //     {
-        //         await _productService.CreateProductAsync(newProduct);
-        //         return CreatedAtRoute("GetProduct", new { id = newProduct.Id.ToString() }, newProduct);
-        //     }
-        //     catch (KeyNotFoundException ex)
-        //     {
-        //         return BadRequest(new { message = ex.Message });
-        //     }
-        // }
-
-
-
-        // POST: api/product
-[HttpPost]
-public async Task<ActionResult<Product>> Create(Product newProduct)
-{
-    try
-    {
-        // Check if the product with the same name exists
-        var existingProduct = await _productService.GetProductByNameAsync(newProduct.Name);
-
-        if (existingProduct != null)
+        [HttpPost]
+        public async Task<ActionResult<Product>> Create(Product newProduct)
         {
-            // Product exists, update its quantity
-            existingProduct.Quantity += newProduct.Quantity;
+            try
+            {
+                // Check if the product with the same name exists
+                var existingProduct = await _productService.GetProductByNameAsync(newProduct.Name);
 
-            await _productService.UpdateProductAsync(existingProduct.Id, existingProduct);
+                if (existingProduct != null)
+                {
+                    // Product exists, update its quantity
+                    existingProduct.Quantity += newProduct.Quantity;
 
-            return Ok(new { message = "Product quantity updated successfully", product = existingProduct });
+                    await _productService.UpdateProductAsync(existingProduct.Id, existingProduct);
+
+                    return Ok(new { message = "Product quantity updated successfully", product = existingProduct });
+                }
+                else
+                {
+                    // Product doesn't exist, create a new one
+                    await _productService.CreateProductAsync(newProduct);
+                    return CreatedAtRoute("GetProduct", new { id = newProduct.Id.ToString() }, newProduct);
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        else
-        {
-            // Product doesn't exist, create a new one
-            await _productService.CreateProductAsync(newProduct);
-            return CreatedAtRoute("GetProduct", new { id = newProduct.Id.ToString() }, newProduct);
-        }
-    }
-    catch (KeyNotFoundException ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-}
 
 
 
