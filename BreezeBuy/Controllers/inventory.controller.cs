@@ -13,9 +13,12 @@ namespace BreezeBuy.Controllers
     public class InventoryController : ControllerBase
     {
         private readonly InventoryService _inventoryService;
-        public InventoryController(InventoryService inventoryService)
+        private readonly ProductService _productService;
+
+        public InventoryController(InventoryService inventoryService, ProductService productService)
         {
             _inventoryService = inventoryService;
+            _productService = productService;
         }
 
         //Get : api/inventory
@@ -39,14 +42,81 @@ namespace BreezeBuy.Controllers
             return Ok(inventory);
         }
 
+         //Get : api/inventory/product/{productId}
+        [HttpGet("product/{productId}", Name = "GetInventoryByProductId")]
+        public async Task<ActionResult<Inventory>> GetByProductId(string productId)
+        {
+            var inventory = await _inventoryService.GetByProductIdAsync(productId);
+            if (inventory == null)
+            {
+                return NotFound();
+            }
+            return Ok(inventory);
+        }
+
+         // Get : api/inventory/products
+        [HttpGet("products")]
+        public async Task<ActionResult<List<Product>>> GetActiveProducts()
+        {
+            var products = await _productService.GetAllProductsAsync();
+
+            // Filter to only include active products
+            var activeProducts = products.Where(product => product.IsActive).ToList();
+
+            return Ok(activeProducts);
+        }
+
+
 
         //Post : api/inventory
+        // [HttpPost]
+        // public async Task<ActionResult<Inventory>> Create(Inventory newInventory)
+        // {
+        //     await _inventoryService.CreateAsync(newInventory);
+        //     return CreatedAtRoute("GetInventory", new { id = newInventory.Id.ToString() }, newInventory);
+        // }
+
+        //  [HttpPost]
+        // public async Task<ActionResult<Inventory>> Create(Inventory newInventory)
+        // {
+        //     // Check if the product exists
+        //     var product = await _productService.GetProductByIdAsync(newInventory.ProductId);
+        //     if (product == null)
+        //     {
+        //         return BadRequest(new { message = "Product not found." });
+        //     }
+
+        //     // Check if the inventory item already exists
+        //     var existingInventory = await _inventoryService.GetByProductIdAsync(newInventory.ProductId);
+        //     if (existingInventory != null)
+        //     {
+        //         return BadRequest(new { message = "Inventory item for this product already exists." });
+        //     }
+
+        //     await _inventoryService.CreateAsync(newInventory);
+        //     return CreatedAtRoute("GetInventory", new { id = newInventory.Id.ToString() }, newInventory);
+        // }
+
         [HttpPost]
-        public async Task<ActionResult<Inventory>> Create(Inventory newInventory)
-        {
-            await _inventoryService.CreateAsync(newInventory);
-            return CreatedAtRoute("GetInventory", new { id = newInventory.Id.ToString() }, newInventory);
-        }
+public async Task<ActionResult<Inventory>> Create(Inventory newInventory)
+{
+    // Check if the product exists
+    var product = await _productService.GetProductByIdAsync(newInventory.ItemId);
+    if (product == null)
+    {
+        return BadRequest(new { message = "Product not found." });
+    }
+
+    // Check if the inventory item with the same custom ProductID already exists
+    var existingInventory = await _inventoryService.GetByProductIdAsync(newInventory.ProductId);
+    if (existingInventory != null)
+    {
+        return BadRequest(new { message = "Inventory item for this custom ProductID already exists." });
+    }
+
+    await _inventoryService.CreateAsync(newInventory);
+    return CreatedAtRoute("GetInventory", new { id = newInventory.Id.ToString() }, newInventory);
+}
 
         //Put : api/inventory/{id}
         [HttpPut("{id:length(24)}")]

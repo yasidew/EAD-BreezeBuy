@@ -14,6 +14,9 @@ namespace BreezeBuy.Models
         [BsonElement("productId")]
         public String ProductId { get; set; } // MongoDB's unique identifier
 
+         [BsonElement("itemId")]
+        public string ItemId { get; set; } // MongoDB's unique identifier for the product
+
         [BsonElement("productName")]
         public string ProductName { get; set; } // Product Name
 
