@@ -6,10 +6,12 @@ namespace BreezeBuy.Services
     public class OrderService
     {
         private readonly OrderRepository _orderRepository;
+        private readonly InventoryService _inventoryService;
 
-        public OrderService(OrderRepository orderRepository)
+        public OrderService(OrderRepository orderRepository, InventoryService inventoryService)
         {
             _orderRepository = orderRepository;
+            _inventoryService = inventoryService;
         }
 
         public async Task<List<Order>> GetOrdersAsync()
@@ -22,9 +24,28 @@ namespace BreezeBuy.Services
             return await _orderRepository.GetOrderByIdAsync(id);
         }
 
+        // public async Task CreateOrderAsync(Order order)
+        // {
+        //     await _orderRepository.CreateOrderAsync(order);
+        // }
+
         public async Task CreateOrderAsync(Order order)
         {
+            // Check inventory levels before creating the order
+            foreach (var item in order.Items)
+            {
+                var inventoryItem = await _inventoryService.GetByProductIdAsync(item.ProductId);
+                if (inventoryItem == null || inventoryItem.QuantityAvailable < item.Quantity)
+                {
+                    throw new InvalidOperationException("Insufficient stock for product: " + item.ProductId);
+                }
+            }
+
+            // Create the order
             await _orderRepository.CreateOrderAsync(order);
+
+            // Notify InventoryService to update inventory levels
+            await _inventoryService.UpdateInventoryLevelsAsync(order);
         }
 
         public async Task UpdateOrderAsync(string id, Order order)
@@ -38,7 +59,7 @@ namespace BreezeBuy.Services
         }
 
 
-         // New method to check for pending orders for a product
+        // New method to check for pending orders for a product
         public async Task<bool> HasPendingOrdersForProduct(string productId)
         {
             var orders = await _orderRepository.GetOrdersAsync();
