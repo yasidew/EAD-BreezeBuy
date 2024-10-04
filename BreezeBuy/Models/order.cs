@@ -8,8 +8,8 @@ namespace BreezeBuy.Models
     public class Order
     {
         [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
 
         [BsonElement("orderNumber")]
         public string OrderNumber { get; set; }
