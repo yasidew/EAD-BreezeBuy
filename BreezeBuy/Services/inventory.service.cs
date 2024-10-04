@@ -30,6 +30,10 @@ namespace BreezeBuy.Services
         public async Task<Inventory> GetIByIdAsync(string id) =>
             await _inventoryCollection.Find(inventory => inventory.Id == id).FirstOrDefaultAsync();
 
+        //get inventory item by productId
+        public async Task<Inventory> GetByProductIdAsync(string productId) =>
+            await _inventoryCollection.Find(inventory => inventory.ProductId == productId).FirstOrDefaultAsync();
+
         //create a new inventory item
         public async Task CreateAsync(Inventory newInventory) =>
             await _inventoryCollection.InsertOneAsync(newInventory);
@@ -94,5 +98,10 @@ namespace BreezeBuy.Services
         await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
     }
 
+    // public async Task<Inventory> GetByItemIdAsync(string itemId) =>
+    // await _inventoryCollection.Find(inventory => inventory.ItemId == itemId).FirstOrDefaultAsync();
+
     }
+
+    
 }
