@@ -228,7 +228,7 @@ namespace BreezeBuy.Controllers
 		[HttpPut("activateCustomerAccount")]
 		public async Task<IActionResult> ActivateCustomerAccount([FromBody] ActivateAccountRequest request)
 		{
-			// Ensure a CSR is performing the action
+			// Ensure a CSR is performing the action ttt
 			var csrUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 			if (string.IsNullOrEmpty(csrUserId))
