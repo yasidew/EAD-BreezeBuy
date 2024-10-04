@@ -55,8 +55,6 @@ namespace BreezeBuy.Controllers
             {
                 return Unauthorized();
             }
-
-			// Check if the user is deactivated
 			
 			if (user.Status == "deactivated")
 			{
