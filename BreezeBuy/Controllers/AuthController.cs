@@ -184,6 +184,7 @@ namespace BreezeBuy.Controllers
 			});
 		}
 
+		
 		[Authorize]
 		[HttpPut("deactivateAccount")]
 		public async Task<IActionResult> DeactivateAccount()
@@ -220,6 +221,54 @@ namespace BreezeBuy.Controllers
 				Username = user.Username,
 				Status = user.Status,
 				Message = "Account successfully deactivated."
+			});
+		}
+
+		
+
+		[Authorize(Roles = "CSR")]
+		[HttpPut("activateCustomerAccount")]
+		public async Task<IActionResult> ActivateCustomerAccount([FromBody] ActivateAccountRequest request)
+		{
+			// Ensure a CSR is performing the action
+			var csrUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			if (string.IsNullOrEmpty(csrUserId))
+			{
+				return BadRequest("CSR UserId not found in token");
+			}
+
+			if (string.IsNullOrEmpty(request.CustomerId))
+			{
+				return BadRequest("CustomerId is required");
+			}
+
+			// Fetch the customer from the database using the provided customerId
+			var customer = await _userCollection.Find(u => u.Id == request.CustomerId).FirstOrDefaultAsync();
+
+			if (customer == null)
+			{
+				return NotFound("Customer not found");
+			}
+
+			// Check if the customer's account is deactivated
+			if (customer.Status != "deactivated")
+			{
+				return BadRequest("Only deactivated accounts can be activated.");
+			}
+
+			// Set the customer's status to "active"
+			customer.Status = "active";
+
+			// Update the customer status in the database
+			await _userCollection.ReplaceOneAsync(u => u.Id == customer.Id, customer);
+
+			return Ok(new
+			{
+				CustomerId = customer.Id,
+				Username = customer.Username,
+				Status = customer.Status,
+				Message = "Customer account successfully activated by CSR."
 			});
 		}
 

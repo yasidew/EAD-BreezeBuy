@@ -40,10 +40,27 @@ namespace BreezeBuy.Controllers
         }
 
 		[HttpGet("get-users")]
-		public async Task<IActionResult> GetUsers()
+		public async Task<IActionResult> GetUsers(int page = 1, int pageSize = 5)
 		{
+			/*
 			var users = await _userCollection.Find(_ => true).ToListAsync();
-			return Ok(users);
+			return Ok(users);*/
+
+			var skip = (page - 1) * pageSize;
+			var users = await _userCollection
+				.Find(_ => true)
+				.Skip(skip)
+				.Limit(pageSize)
+				.ToListAsync();
+
+			var totalUsers = await _userCollection.CountDocumentsAsync(_ => true);
+			var totalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+
+			return Ok(new
+			{
+				users,
+				totalPages
+			});
 		}
 
 		[HttpDelete("delete-customer/{username}")]
