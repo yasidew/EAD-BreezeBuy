@@ -50,7 +50,7 @@ namespace BreezeBuy.Services
         //     await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
 
 
-         // Check for low stock and return a list of items that need to be reordered
+        // Check for low stock and return a list of items that need to be reordered
         // public async Task <List<Inventory>> GetLowStockItemsAsync()
         // {
         //     var lowStockItems =  await _inventoryCollection.Find(inventory => inventory.QuantityAvailable < inventory.ReoderLevel).ToListAsync();
@@ -68,7 +68,7 @@ namespace BreezeBuy.Services
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
-    
+
         public async Task<List<Inventory>> GetLowStockItemsAsync()
         {
             var lowStockItems = await _inventoryCollection.Find(inventory => inventory.QuantityAvailable < inventory.ReoderLevel).ToListAsync();
@@ -83,25 +83,40 @@ namespace BreezeBuy.Services
             return lowStockItems;
         }
 
-        
+
 
         public async Task RemoveAsync(string id)
-    {
-        // Check if the product has any pending orders
-        var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(id);
-        if (hasPendingOrders)
         {
-            throw new InvalidOperationException("Cannot remove product with pending orders.");
+            // Check if the product has any pending orders
+            var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(id);
+            if (hasPendingOrders)
+            {
+                throw new InvalidOperationException("Cannot remove product with pending orders.");
+            }
+
+            // If no pending orders, proceed with removal
+            await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
         }
 
-        // If no pending orders, proceed with removal
-        await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
+
+        public async Task UpdateInventoryLevelsAsync(Order order)
+        {
+            foreach (var item in order.Items)
+            {
+                var inventoryItem = await _inventoryCollection.Find(inventory => inventory.ProductId == item.ProductId).FirstOrDefaultAsync();
+                if (inventoryItem != null)
+                {
+                    inventoryItem.QuantityAvailable -= item.Quantity;
+                    inventoryItem.LastUpdated = DateTime.UtcNow;
+                    await _inventoryCollection.ReplaceOneAsync(x => x.Id == inventoryItem.Id, inventoryItem);
+                }
+            }
+        }
+
+        // public async Task<Inventory> GetByItemIdAsync(string itemId) =>
+        // await _inventoryCollection.Find(inventory => inventory.ItemId == itemId).FirstOrDefaultAsync();
+
     }
 
-    // public async Task<Inventory> GetByItemIdAsync(string itemId) =>
-    // await _inventoryCollection.Find(inventory => inventory.ItemId == itemId).FirstOrDefaultAsync();
 
-    }
-
-    
 }
