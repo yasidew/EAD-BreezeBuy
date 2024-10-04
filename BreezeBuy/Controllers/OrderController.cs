@@ -37,8 +37,17 @@ namespace BreezeBuy.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
-            await _orderService.CreateOrderAsync(order);
-            return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            // await _orderService.CreateOrderAsync(order);
+            // return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            try
+            {
+                await _orderService.CreateOrderAsync(order);
+                return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id:length(24)}")]
