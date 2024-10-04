@@ -38,14 +38,24 @@ namespace BreezeBuy.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
+
             // Generate a new Id if it's not provided
             if (string.IsNullOrEmpty(order.Id))
             {
                 order.Id = ObjectId.GenerateNewId().ToString();
             }
 
-            await _orderService.CreateOrderAsync(order);
-            return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            try
+            {
+                await _orderService.CreateOrderAsync(order);
+                return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle insufficient stock or other business logic exceptions
+                return BadRequest(new { message = ex.Message });
+            }
+
         }
 
         [HttpPut("{id:length(24)}")]

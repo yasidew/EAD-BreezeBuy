@@ -22,7 +22,7 @@ namespace BreezeBuy.Models
 
         // Set default status to "pending"
         [BsonElement("status")]
-        public string Status { get; set; } = "pending";
+        public string Status { get; set; } = "Pending";
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
