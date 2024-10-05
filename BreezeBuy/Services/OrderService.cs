@@ -11,11 +11,12 @@ namespace BreezeBuy.Services
 
         private readonly InventoryService _inventoryService;
 
-        public OrderService(OrderRepository orderRepository, ProductService productService)
+        public OrderService(OrderRepository orderRepository, ProductService productService, InventoryService inventoryService)
         {
             _orderRepository = orderRepository;
             _productService = productService;
-        }
+            _inventoryService = inventoryService;
+        }   
 
         // Fetch all orders
         public async Task<List<Order>> GetOrdersAsync()
