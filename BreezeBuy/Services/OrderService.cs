@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace BreezeBuy.Services
 {
-    public class OrderService
+    public class OrderService 
     {
         private readonly OrderRepository _orderRepository;
         private readonly ProductService _productService;
+        //  private readonly Func<InventoryService> _inventoryServiceFactory;
         private readonly InventoryService _inventoryService;
 
         // Constructor with InventoryService added
@@ -17,6 +18,7 @@ namespace BreezeBuy.Services
         {
             _orderRepository = orderRepository;
             _productService = productService;
+            // _inventoryServiceFactory = inventoryServiceFactory;
             _inventoryService = inventoryService;
         }
 
@@ -65,7 +67,9 @@ namespace BreezeBuy.Services
             await _orderRepository.CreateOrderAsync(order);
 
             // Notify InventoryService to update inventory levels
-            await _inventoryService.UpdateInventoryLevelsAsync(order);
+            // await _inventoryService.UpdateInventoryLevelsAsync(order);
+            //  var inventoryService = _inventoryServiceFactory();
+            // await inventoryService.UpdateInventoryLevelsAsync(order);
         }
 
         // Update existing order and recalculate total prices
