@@ -52,12 +52,24 @@ namespace BreezeBuy.Controllers
             var order = await _orderService.GetOrderByIdAsync(id);
             if (order == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Order not found." });
             }
 
-            await _orderService.UpdateOrderAsync(id, orderIn);
-            return NoContent();
+            orderIn.Id = order.Id; // Ensure the Id is not modified
+
+            try
+            {
+                await _orderService.UpdateOrderAsync(id, orderIn);
+                return Ok(new { message = "Order updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, new { message = "An error occurred while updating the order.", error = ex.Message });
+            }
         }
+
+
 
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteOrder(string id)
