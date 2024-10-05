@@ -1,5 +1,7 @@
 using BreezeBuy.Models;
 using BreezeBuy.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BreezeBuy.Services
@@ -8,13 +10,14 @@ namespace BreezeBuy.Services
     {
         private readonly OrderRepository _orderRepository;
         private readonly ProductService _productService;
-
         private readonly InventoryService _inventoryService;
 
-        public OrderService(OrderRepository orderRepository, ProductService productService)
+        // Constructor with InventoryService added
+        public OrderService(OrderRepository orderRepository, ProductService productService, InventoryService inventoryService)
         {
             _orderRepository = orderRepository;
             _productService = productService;
+            _inventoryService = inventoryService;
         }
 
         // Fetch all orders
@@ -97,7 +100,6 @@ namespace BreezeBuy.Services
         {
             await _orderRepository.DeleteOrderAsync(id);
         }
-
 
         // New method to check for pending orders for a product
         public async Task<bool> HasPendingOrdersForProduct(string productId)
