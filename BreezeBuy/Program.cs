@@ -41,7 +41,9 @@ builder.Services.AddSingleton<VendorService>();
 builder.Services.AddSingleton<OrderService>();
 builder.Services.AddSingleton<OrderRepository>();
 
+
 // builder.Services.AddSingleton<UseSer>();
+
 
 // Configure JWT authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();

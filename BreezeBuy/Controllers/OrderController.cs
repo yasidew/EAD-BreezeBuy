@@ -11,10 +11,12 @@ namespace BreezeBuy.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderService _orderService;
+        private readonly InventoryService _inventoryService;
 
-        public OrderController(OrderService orderService)
+        public OrderController(OrderService orderService, InventoryService inventoryService)
         {
             _orderService = orderService;
+            _inventoryService = inventoryService;
         }
 
         [HttpGet]
@@ -106,6 +108,8 @@ namespace BreezeBuy.Controllers
             // Set order status to "purchased"
             order.Status = "purchased";
             await _orderService.UpdateOrderAsync(id, order);
+
+            await _inventoryService.UpdateInventoryLevelsAsync(order);
 
             return NoContent();
         }
