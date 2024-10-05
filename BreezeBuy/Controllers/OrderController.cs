@@ -77,12 +77,21 @@ namespace BreezeBuy.Controllers
             var order = await _orderService.GetOrderByIdAsync(id);
             if (order == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Order not found." });
             }
 
-            await _orderService.DeleteOrderAsync(id);
-            return NoContent();
+            try
+            {
+                await _orderService.DeleteOrderAsync(id);
+                return Ok(new { message = "Order deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if needed
+                return StatusCode(500, new { message = "An error occurred while deleting the order.", error = ex.Message });
+            }
         }
+
 
         [HttpPut("purchase/{id:length(24)}")]
         public async Task<IActionResult> PurchaseOrder(string id)
