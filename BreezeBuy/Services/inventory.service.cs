@@ -13,45 +13,117 @@ namespace BreezeBuy.Services
     {
         private readonly IMongoCollection<Inventory> _inventoryCollection;
         private readonly OrderService _orderService;
-        // private readonly Func<OrderService> _orderServiceFactory;
-
+        private readonly ProductService _productService;
         private readonly ILogger<InventoryService> _logger;
 
-        public InventoryService(IOptions<MongoDbSettings> mongoDbSettings, ILogger<InventoryService> logger)
+        public InventoryService(IOptions<MongoDbSettings> mongoDbSettings, ILogger<InventoryService> logger, ProductService productService)
         {
             var settings = mongoDbSettings.Value;
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _inventoryCollection = database.GetCollection<Inventory>(settings.InventoryCollectionName);
-            // _orderService = orderService; 
-            // _orderServiceFactory = orderServiceFactory;
+            _productService = productService;
             _logger = logger;
         }
 
         //get all inventory items
-        public async Task<List<Inventory>> GetAsync() =>
-            await _inventoryCollection.Find(inventory => true).ToListAsync();
+        public async Task<List<InventoryResponse>> GetAsync()
+        {
+            var inventories = await _inventoryCollection.Find(inventory => true).ToListAsync();
+            var inventoryResponses = new List<InventoryResponse>();
+
+            foreach (var inventory in inventories)
+            {
+                var product = await _productService.GetProductByIdAsync(inventory.ItemId);
+                if (product != null)
+                {
+                    var inventoryResponse = new InventoryResponse
+                    {
+                        Id = inventory.Id,
+                        ProductId = inventory.ProductId,
+                        ProductName = inventory.ProductName,
+                        QuantityAvailable = inventory.QuantityAvailable,
+                        ReoderLevel = inventory.ReoderLevel,
+                        LastUpdated = inventory.LastUpdated,
+
+                        Details = new InventoryDetails
+                        {
+
+                            ItemId = inventory.ItemId,
+                            Name = product.Name
+                        }
+                    };
+                    inventoryResponses.Add(inventoryResponse);
+                }
+            }
+            return inventoryResponses;
+        }
 
         //get inventory item by id
-        public async Task<Inventory> GetIByIdAsync(string id) =>
-            await _inventoryCollection.Find(inventory => inventory.Id == id).FirstOrDefaultAsync();
+        public async Task<InventoryResponse> GetIByIdAsync(string id)
+        {
+            var inventory = await _inventoryCollection.Find(inventory => inventory.Id == id).FirstOrDefaultAsync();
+            if (inventory != null)
+            {
+                var product = await _productService.GetProductByIdAsync(inventory.ItemId);
+                if (product != null)
+                {
+                    return new InventoryResponse
+                    {
+                        Id = inventory.Id,
+                        ProductId = inventory.ProductId,
+                        ProductName = inventory.ProductName,
+                        QuantityAvailable = inventory.QuantityAvailable,
+                        ReoderLevel = inventory.ReoderLevel,
+                        LastUpdated = inventory.LastUpdated,
+
+                        Details = new InventoryDetails
+                        {
+
+                            ItemId = inventory.ItemId,
+                            Name = product.Name
+                        }
+                    };
+                }
+            }
+            return null;
+        }
 
         //get inventory item by productId
-        public async Task<Inventory> GetByProductIdAsync(string productId) =>
-            await _inventoryCollection.Find(inventory => inventory.ProductId == productId).FirstOrDefaultAsync();
+        public async Task<InventoryResponse> GetByProductIdAsync(string productId)
+        {
+            var inventory = await _inventoryCollection.Find(inventory => inventory.ProductId == productId).FirstOrDefaultAsync();
+            if (inventory != null)
+            {
+                var product = await _productService.GetProductByIdAsync(inventory.ItemId);
+                if (product != null)
+                {
+                    return new InventoryResponse
+                    {
+                        Id = inventory.Id,
+                        ProductId = inventory.ProductId,
+                        ProductName = inventory.ProductName,
+                        QuantityAvailable = inventory.QuantityAvailable,
+                        ReoderLevel = inventory.ReoderLevel,
+                        LastUpdated = inventory.LastUpdated,
+
+                        Details = new InventoryDetails
+                        {
+
+                            ItemId = inventory.ItemId,
+                            Name = product.Name
+                        }
+                    };
+                }
+            }
+            return null;
+        }
 
         //create a new inventory item
         public async Task CreateAsync(Inventory newInventory) =>
             await _inventoryCollection.InsertOneAsync(newInventory);
 
         //update an inventory item
-        // public async Task UpdateAsync(string id, Inventory updatedInventory)
-        // {
-        //     updatedInventory.Id = id; // Ensure the Id is set correctly
-        //     await _inventoryCollection.ReplaceOneAsync(x => x.Id == id, updatedInventory);
-        // }
-
-        // Update an inventory item
         public async Task UpdateAsync(string id, Inventory updatedInventory)
         {
             updatedInventory.Id = id; // Ensure the Id is set correctly
@@ -71,27 +143,6 @@ namespace BreezeBuy.Services
             await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
         }
 
-        // public async Task RemoveAsync(string id)
-        // {
-        //     // Fetch the inventory item by ID
-        //     var inventory = await GetIByIdAsync(id);
-        //     if (inventory == null)
-        //     {
-        //         throw new KeyNotFoundException("Inventory item not found.");
-        //     }
-
-        //     // Check if there are any pending orders for the product
-        //     var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(inventory.ProductId);
-        //     if (hasPendingOrders)
-        //     {
-        //         throw new InvalidOperationException("Cannot remove inventory item with pending orders.");
-        //     }
-
-        //     // If no pending orders, proceed with removal
-        //     await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
-        // }
-
-
         // Send low stock alert email
         public async Task SendLowStockAlertEmail(string productName, string productId, string vendorEmail)
         {
@@ -105,7 +156,7 @@ namespace BreezeBuy.Services
 
                 var smtp = new SmtpClient
                 {
-                    Host = "smtp.gmail.com", // e.g., smtp.gmail.com for Gmail
+                    Host = "smtp.gmail.com",
                     Port = 587,
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
@@ -131,48 +182,40 @@ namespace BreezeBuy.Services
         }
 
         // Get low stock items
-        public async Task<List<Inventory>> GetLowStockItemsAsync()
+        public async Task<List<InventoryResponse>> GetLowStockItemsAsync()
         {
             var lowStockItems = await _inventoryCollection.Find(inventory => inventory.QuantityAvailable < inventory.ReoderLevel).ToListAsync();
+            var lowStockResponses = new List<InventoryResponse>();
 
-            // Send notifications for low stock
-            foreach (var item in lowStockItems)
+            foreach (var inventory in lowStockItems)
             {
-                // Here, assume vendor email is fetched based on the product/vendor association (you can adjust based on your product model)
-                await SendLowStockAlertEmail(item.ProductName, item.ProductId, "ydewmin@gmail.com");
+                var product = await _productService.GetProductByIdAsync(inventory.ItemId);
+                if (product != null)
+                {
+                    var inventoryResponse = new InventoryResponse
+                    {
+                        Id = inventory.Id,
+                        ProductId = inventory.ProductId,
+                        ProductName = inventory.ProductName,
+                        QuantityAvailable = inventory.QuantityAvailable,
+                        ReoderLevel = inventory.ReoderLevel,
+                        LastUpdated = inventory.LastUpdated,
+
+                        Details = new InventoryDetails
+                        {
+
+                            ItemId = inventory.ItemId,
+                            Name = product.Name
+                        }
+                    };
+                    lowStockResponses.Add(inventoryResponse);
+
+                    // Send low stock alert email
+                    await SendLowStockAlertEmail(inventory.ProductName, inventory.ProductId, "ydewmin@gmail.com"); // Replace with actual vendor email
+                }
             }
-
-            return lowStockItems;
+            return lowStockResponses;
         }
-
-
-
-        // public async Task RemoveAsync(string id)
-        // {
-        //     // Check if the product has any pending orders
-        //     var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(id);
-        //     if (hasPendingOrders)
-        //     {
-        //         throw new InvalidOperationException("Cannot remove product with pending orders.");
-        //     }
-
-        //     // If no pending orders, proceed with removal
-        //     await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
-        // }
-
-        // public async Task RemoveAsync(string id)
-        // {
-        //     var inventory = await GetIByIdAsync(id);
-        //     if (inventory != null && !inventory.HasPendingOrders)
-        //     {
-        //         await _inventoryCollection.DeleteOneAsync(inventory => inventory.Id == id);
-        //     }
-        //     else
-        //     {
-        //         throw new InvalidOperationException("Cannot remove inventory item with pending orders.");
-        //     }
-        // }
-
 
         // Update inventory levels based on order
         public async Task UpdateInventoryLevelsAsync(Order order)
@@ -189,12 +232,8 @@ namespace BreezeBuy.Services
                 var inventoryItem = await _inventoryCollection.Find(inventory => inventory.ItemId == item.ProductId).FirstOrDefaultAsync();
                 if (inventoryItem != null)
                 {
-                    _logger.LogInformation($"Found inventory item with ProductId: {inventoryItem.ProductId} and QuantityAvailable: {inventoryItem.QuantityAvailable}");
-
                     inventoryItem.QuantityAvailable -= item.Quantity;
                     inventoryItem.LastUpdated = DateTime.UtcNow;
-
-                    _logger.LogInformation($"Updated QuantityAvailable for ProductId: {inventoryItem.ProductId} to {inventoryItem.QuantityAvailable}");
 
                     await _inventoryCollection.ReplaceOneAsync(x => x.Id == inventoryItem.Id, inventoryItem);
 
@@ -202,20 +241,14 @@ namespace BreezeBuy.Services
                     if (inventoryItem.QuantityAvailable < inventoryItem.ReoderLevel)
                     {
                         // Send low stock alert email
-                        _logger.LogInformation($"QuantityAvailable for ProductId: {inventoryItem.ProductId} is below ReorderLevel: {inventoryItem.ReoderLevel}. Sending low stock alert email.");
                         await SendLowStockAlertEmail(inventoryItem.ProductName, inventoryItem.ProductId, "ydewmin@gmail.com"); // Replace with actual vendor email
                     }
                 }
                 else
                 {
-                    _logger.LogWarning($"No inventory item found for ProductId: {item.ProductId}");
+                    _logger.LogWarning($"Inventory item with ProductId: {item.ProductId} not found.");
                 }
             }
         }
-
-
-
     }
-
-
 }
