@@ -5,3 +5,4 @@ namespace BreezeBuy.Models
 		public string CustomerId { get; set; }
 	}
 }
+
