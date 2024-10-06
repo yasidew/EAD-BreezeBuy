@@ -1,4 +1,5 @@
-﻿namespace BreezeBuy.Models
+namespace BreezeBuy.Models
+
 {
 	public class UpdateUserModel
 	{
@@ -8,4 +9,6 @@
 		public string NewPassword { get; set; }
 		public string ConfirmNewPassword { get; set; }
 	}
+
 }
+

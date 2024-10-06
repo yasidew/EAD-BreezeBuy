@@ -1,6 +1,7 @@
 using BreezeBuy.Data;
 using BreezeBuy.Models;
 using BreezeBuy.Services;
+using BreezeBuy.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // Configure MongoDB settings
+
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
@@ -22,11 +24,26 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 // Register the InventoryService (and any other services you need)
 builder.Services.AddSingleton<InventoryService>();
+// builder.Services.AddSingleton<OrderService>();
+
+
+// Register the ProductService
+builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<CategoryService>();
+builder.Services.AddSingleton<CartService>();
+// builder.Services.AddSingleton<OrderService>();
+
 
 // for vendor
 builder.Services.AddSingleton<VendorService>();
 
+// Add Order Service and Repository
+builder.Services.AddSingleton<OrderService>();
+builder.Services.AddSingleton<OrderRepository>();
+
+
 // builder.Services.AddSingleton<UseSer>();
+
 
 // Configure JWT authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
