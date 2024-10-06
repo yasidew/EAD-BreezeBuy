@@ -129,7 +129,20 @@ namespace BreezeBuy.Controllers
             return Ok(new { message = "Inventory updated successfully" });
         }
 
-        // Delete : api/inventory/{id}
+        // // Delete : api/inventory/{id}
+        // [HttpDelete("{id:length(24)}")]
+        // public async Task<ActionResult> Delete(string id)
+        // {
+        //     var inventory = await _inventoryService.GetIByIdAsync(id);
+        //     if (inventory == null)
+        //     {
+        //         return NotFound(new { message = "Inventory item not found or already deleted." });
+        //     }
+        //     await _inventoryService.RemoveAsync(id);
+        //     return Ok(new { message = "Inventory deleted successfully" });
+        // }
+
+
         [HttpDelete("{id:length(24)}")]
         public async Task<ActionResult> Delete(string id)
         {
@@ -138,6 +151,21 @@ namespace BreezeBuy.Controllers
             {
                 return NotFound(new { message = "Inventory item not found or already deleted." });
             }
+
+            // Access the ItemId from InventoryDetails
+            var itemId = inventory.Details?.ItemId;
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return BadRequest(new { message = "ItemId not found in InventoryDetails." });
+            }
+
+            // Check for pending orders before deleting
+            var hasPendingOrders = await _orderService.HasPendingOrdersForProduct(itemId);
+            if (hasPendingOrders)
+            {
+                return BadRequest(new { message = "Cannot delete inventory item with pending orders." });
+            }
+
             await _inventoryService.RemoveAsync(id);
             return Ok(new { message = "Inventory deleted successfully" });
         }
