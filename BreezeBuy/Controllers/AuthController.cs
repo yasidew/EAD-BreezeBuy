@@ -89,7 +89,7 @@ namespace BreezeBuy.Controllers
 		[HttpGet("me")]
 		public async Task<IActionResult> GetLoggedInUser()
 		{
-			// Extract the user information from the JWT claims
+			// Extract the user information from the JWT claims GG
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			var username = User.FindFirst(ClaimTypes.Name)?.Value;
 
