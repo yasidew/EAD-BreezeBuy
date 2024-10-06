@@ -32,4 +32,21 @@ namespace BreezeBuy.Models
         // [BsonElement("hasPendingOrders")]
         // public bool HasPendingOrders { get; set; } = false; // New field
     }
+
+public class InventoryResponse
+{
+    public string Id { get; set; }
+    public string ProductId { get; set; }
+    public string ProductName { get; set; }
+    public int QuantityAvailable { get; set; }
+    public int ReoderLevel { get; set; }
+    public DateTime LastUpdated { get; set; }
+    public InventoryDetails Details { get; set; }
+}
+
+public class InventoryDetails
+{
+     public string ItemId { get; set; }
+    public string Name { get; set; }
+}
 }
