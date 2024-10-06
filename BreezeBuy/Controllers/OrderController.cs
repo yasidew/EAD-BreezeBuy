@@ -3,6 +3,7 @@ using BreezeBuy.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Bson;
+using System.Security.Claims;
 
 namespace BreezeBuy.Controllers
 {
@@ -37,6 +38,16 @@ namespace BreezeBuy.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> CreateOrder(Order order)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            // Assign the userId to the order's customerId
+            order.CustomerId = userId;
+
             if (string.IsNullOrEmpty(order.Id))
             {
                 order.Id = ObjectId.GenerateNewId().ToString();
@@ -45,6 +56,7 @@ namespace BreezeBuy.Controllers
             await _orderService.CreateOrderAsync(order);
             return CreatedAtRoute("GetOrder", new { id = order.Id }, order);
         }
+
 
         [HttpPut("{id:length(24)}")]
         public async Task<IActionResult> UpdateOrder(string id, Order orderIn)

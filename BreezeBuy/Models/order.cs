@@ -14,13 +14,12 @@ namespace BreezeBuy.Models
         [BsonElement("orderNumber")]
         public string OrderNumber { get; set; }
 
-        [BsonElement("customer")]
-        public string Customer { get; set; }
+        [BsonElement("customerId")]
+        public string? CustomerId { get; set; } // No need to make this required
 
         [BsonElement("items")]
         public List<OrderItem> Items { get; set; }
 
-        // Set default status to "pending"
         [BsonElement("status")]
         public string Status { get; set; } = "pending";
 
@@ -31,16 +30,17 @@ namespace BreezeBuy.Models
         public decimal TotalPayment { get; set; }
     }
 
+
     public class OrderItem
-{
-    public string ProductId { get; set; } // The ID of the product
-    public int Quantity { get; set; } // Quantity of the product in the order
+    {
+        public string ProductId { get; set; } // The ID of the product
+        public int Quantity { get; set; } // Quantity of the product in the order
 
-    [BsonElement("price")]
-    public decimal Price { get; set; } // Price of the product, fetched from Product collection
+        [BsonElement("price")]
+        public decimal Price { get; set; } // Price of the product, fetched from Product collection
 
-    [BsonElement("totalAmount")]
-    public decimal TotalAmount { get; set; } // Total amount = Price * Quantity
-}
+        [BsonElement("totalAmount")]
+        public decimal TotalAmount { get; set; } // Total amount = Price * Quantity
+    }
 
 }
