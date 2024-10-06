@@ -12,21 +12,41 @@ namespace BreezeBuy.Models
         public string? Id { get; set; } // MongoDB's unique identifier
 
         [BsonElement("productId")]
-        public String ProductId { get; set; } // MongoDB's unique identifier
+        public string ProductId { get; set; }
 
-         [BsonElement("itemId")]
+        [BsonElement("itemId")]
         public string ItemId { get; set; } // MongoDB's unique identifier for the product
 
         [BsonElement("productName")]
         public string ProductName { get; set; } // Product Name
 
         [BsonElement("quantityAvailable")]
-        public int QuantityAvailable{get; set;} // Quantity Available
+        public int QuantityAvailable { get; set; } // Quantity Available
 
         [BsonElement("reorderLevel")]
         public int ReoderLevel { get; set; } // Reorder Level
 
         [BsonElement("lastUpdated")]
-        public DateTime LastUpdated{get; set;} = DateTime.UtcNow; // Last Updated
+        public DateTime LastUpdated { get; set; } = DateTime.UtcNow; // Last Updated
+
+        // [BsonElement("hasPendingOrders")]
+        // public bool HasPendingOrders { get; set; } = false; // New field
     }
+
+public class InventoryResponse
+{
+    public string Id { get; set; }
+    public string ProductId { get; set; }
+    public string ProductName { get; set; }
+    public int QuantityAvailable { get; set; }
+    public int ReoderLevel { get; set; }
+    public DateTime LastUpdated { get; set; }
+    public InventoryDetails Details { get; set; }
+}
+
+public class InventoryDetails
+{
+     public string ItemId { get; set; }
+    public string Name { get; set; }
+}
 }
