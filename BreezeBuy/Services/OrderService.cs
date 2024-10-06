@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BreezeBuy.Services
 {
-    public class OrderService 
+    public class OrderService
     {
         private readonly OrderRepository _orderRepository;
         private readonly ProductService _productService;
@@ -106,12 +106,12 @@ namespace BreezeBuy.Services
         }
 
         // New method to check for pending orders for a product
-        public async Task<bool> HasPendingOrdersForProduct(string productId)
+        public async Task<bool> HasPendingOrdersForProduct(string itemId)
         {
             var orders = await _orderRepository.GetOrdersAsync();
             foreach (var order in orders)
             {
-                if (order.Items.Any(item => item.ProductId == productId && order.Status == "Pending"))
+                if (order.Items.Any(item => item.ProductId == itemId && order.Status == "pending"))
                 {
                     return true;
                 }
