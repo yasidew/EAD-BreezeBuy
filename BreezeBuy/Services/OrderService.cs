@@ -118,5 +118,11 @@ namespace BreezeBuy.Services
             }
             return false;
         }
+
+        // Fetch orders by customerId
+        public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId)
+        {
+            return await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+        }
     }
 }

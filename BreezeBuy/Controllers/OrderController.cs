@@ -143,6 +143,18 @@ namespace BreezeBuy.Controllers
             return NoContent();
         }
 
+         [HttpGet("customer/{customerId:length(24)}")]
+        public async Task<ActionResult<List<Order>>> GetOrdersByCustomerId(string customerId)
+        {
+            var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+
+            if (orders == null || orders.Count == 0)
+            {
+                return NotFound(new { message = "No orders found for the given customer ID." });
+            }
+
+            return Ok(orders);
+        }
     }
 }
 
