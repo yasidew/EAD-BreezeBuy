@@ -178,11 +178,26 @@ namespace BreezeBuy.Controllers
             return Ok(lowStockItems);
         }
 
+        // Get all product items
         [HttpGet("items")]
         public async Task<ActionResult<List<Product>>> GetItems()
         {
             var products = await _productService.GetAllProductsAsync();
             return Ok(products);
+        }
+
+
+        // Search inventory items
+        [HttpGet("search")]
+        public async Task<ActionResult<List<InventoryResponse>>> Search([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return BadRequest(new { message = "Search term cannot be empty." });
+            }
+
+            var searchResults = await _inventoryService.SearchInventoryAsync(searchTerm);
+            return Ok(searchResults);
         }
     }
 }
