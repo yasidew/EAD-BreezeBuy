@@ -74,17 +74,6 @@ namespace BreezeBuy.Controllers
         }
 
 
-        // // GET: api/product/{id}
-        // [HttpGet("{id:length(24)}", Name = "GetProduct")]
-        // public async Task<ActionResult<Product>> GetById(string id)
-        // {
-        //     var product = await _productService.GetProductByIdAsync(id);
-        //     if (product == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     return Ok(product);
-        // }
 
         // GET: api/Product/{id}
         [HttpGet("byid/{id:length(24)}", Name = "GetProductById")]
@@ -113,9 +102,6 @@ namespace BreezeBuy.Controllers
 
             return Ok(product); // Product found and category is active
         }
-
-
-
 
         // PUT: api/product/{id}
         [HttpPut("{id:length(24)}")]
