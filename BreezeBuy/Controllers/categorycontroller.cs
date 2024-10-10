@@ -119,43 +119,43 @@ namespace BreezeBuy.Controllers
         }
 
         // PUT: api/category/{id}
-// PUT: api/category/{id}/name
-[HttpPut("{id:length(24)}/name")]
-public async Task<ActionResult> UpdateCategoryName(string id, [FromBody] string newName)
-{
-    try
-    {
-        await _categoryService.UpdateCategoryNameAsync(id, newName);
-        return Ok(new { message = "Category name updated successfully" });
-    }
-    catch (KeyNotFoundException)
-    {
-        return NotFound(new { message = "Category not found" });
-    }
-}
+        // PUT: api/category/{id}/name
+        [HttpPut("{id:length(24)}/name")]
+        public async Task<ActionResult> UpdateCategoryName(string id, [FromBody] string newName)
+        {
+            try
+            {
+                await _categoryService.UpdateCategoryNameAsync(id, newName);
+                return Ok(new { message = "Category name updated successfully" });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+        }
 
-// DELETE: api/category/{id}
-[HttpDelete("{id:length(24)}")]
-public async Task<ActionResult> DeleteCategory(string id)
-{
-    var category = await _categoryService.GetCategoryByIdAsync(id);
-    
-    if (category == null)
-    {
-        return NotFound(new { message = "Category not found" });
-    }
+        // DELETE: api/category/{id}
+        [HttpDelete("{id:length(24)}")]
+        public async Task<ActionResult> DeleteCategory(string id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
 
-    // Check if the category contains any products
-    if (category.Products.Count > 0)
-    {
-        return BadRequest(new { message = "Category cannot be deleted because it contains products" });
-    }
+            if (category == null)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
 
-    // Delete the category
-    await _categoryService.DeleteCategoryAsync(id);
+            // Check if the category contains any products
+            if (category.Products.Count > 0)
+            {
+                return BadRequest(new { message = "Category cannot be deleted because it contains products" });
+            }
 
-    return Ok(new { message = "Category deleted successfully" });
-}
+            // Delete the category
+            await _categoryService.DeleteCategoryAsync(id);
+
+            return Ok(new { message = "Category deleted successfully" });
+        }
 
 
     }
