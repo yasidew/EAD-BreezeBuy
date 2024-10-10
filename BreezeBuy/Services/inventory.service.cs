@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace BreezeBuy.Services
 {
@@ -249,6 +250,44 @@ namespace BreezeBuy.Services
                     _logger.LogWarning($"Inventory item with ProductId: {item.ProductId} not found.");
                 }
             }
+        }
+
+        public async Task<List<InventoryResponse>> SearchInventoryAsync(string searchTerm)
+        {
+            var filter = Builders<Inventory>.Filter.Or(
+                Builders<Inventory>.Filter.Regex("productName", new BsonRegularExpression(searchTerm, "i")),
+                Builders<Inventory>.Filter.Regex("productId", new BsonRegularExpression(searchTerm, "i")),
+                Builders<Inventory>.Filter.Regex("quantityAvailable", new BsonRegularExpression(searchTerm, "i")),
+                Builders<Inventory>.Filter.Regex("reorderLevel", new BsonRegularExpression(searchTerm, "i"))
+            );
+
+            var inventories = await _inventoryCollection.Find(filter).ToListAsync();
+            var inventoryResponses = new List<InventoryResponse>();
+
+            foreach (var inventory in inventories)
+            {
+                var product = await _productService.GetProductByIdAsync(inventory.ItemId);
+                if (product != null)
+                {
+                    var inventoryResponse = new InventoryResponse
+                    {
+                        Id = inventory.Id,
+                        ProductId = inventory.ProductId,
+                        ProductName = inventory.ProductName,
+                        QuantityAvailable = inventory.QuantityAvailable,
+                        ReoderLevel = inventory.ReoderLevel,
+                        LastUpdated = inventory.LastUpdated,
+
+                        Details = new InventoryDetails
+                        {
+                            ItemId = inventory.ItemId,
+                            Name = product.Name
+                        }
+                    };
+                    inventoryResponses.Add(inventoryResponse);
+                }
+            }
+            return inventoryResponses;
         }
     }
 }

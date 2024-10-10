@@ -17,7 +17,6 @@ namespace BreezeBuy.Controllers
             _categoryService = categoryService;
         }
 
-
         // GET: api/category/{id}
         [HttpGet("{id:length(24)}", Name = "GetCategory")]
         public async Task<ActionResult<Category>> GetById(string id)
@@ -53,70 +52,109 @@ namespace BreezeBuy.Controllers
             }
         }
 
-        // GET: api/category
-        // [HttpGet]
-        // public async Task<ActionResult<List<Category>>> GetAllCategories()
-        // {
-        //     var categories = await _categoryService.GetAllCategoriesAsync();
-        //     return Ok(categories);
-        // }
-
-        [HttpGet]
-public async Task<ActionResult<List<Category>>> GetAllCategories()
-{
-    var activeCategories = await _categoryService.GetAllActiveCategoriesAsync();
-    return Ok(activeCategories);
-}
-
-        // PUT: api/category/{categoryId}/activate
-[HttpPut("{categoryId:length(24)}/activate")]
-public async Task<ActionResult> ActivateCategory(string categoryId)
-{
-    try
-    {
-        await _categoryService.ActivateCategoryAsync(categoryId);
-        return Ok(new { message = "Category activated successfully" });
-    }
-    catch (KeyNotFoundException)
-    {
-        return NotFound(new { message = "Category not found" });
-    }
-}
-
-// PUT: api/category/{categoryId}/deactivate
-[HttpPut("{categoryId:length(24)}/deactivate")]
-public async Task<ActionResult> DeactivateCategory(string categoryId)
-{
-    try
-    {
-        await _categoryService.DeactivateCategoryAsync(categoryId);
-        return Ok(new { message = "Category deactivated successfully" });
-    }
-    catch (KeyNotFoundException)
-    {
-        return NotFound(new { message = "Category not found" });
-    }
-}
-
-// GET: api/products/searchByCategory?categoryName=categoryName
-[HttpGet("/api/products/searchByCategory")]
-public async Task<ActionResult<List<Product>>> SearchProductsByCategoryName([FromQuery] string categoryName)
-{
-    try
-    {
-        var products = await _categoryService.SearchProductsByCategoryNameAsync(categoryName);
-        if (products == null || products.Count == 0)
+        // GET: api/category/all (For all categories)
+        [HttpGet("all")]
+        public async Task<ActionResult<List<Category>>> GetAllCategoriesAsync()
         {
-            return NotFound(new { message = "No products found in the specified category" });
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            return Ok(categories);
         }
 
-        return Ok(products);
-    }
-    catch (KeyNotFoundException)
-    {
-        return NotFound(new { message = "Category not found" });
-    }
-}
+        // GET: api/category (For active categories)
+        [HttpGet]
+        public async Task<ActionResult<List<Category>>> GetAllActiveCategories()
+        {
+            var activeCategories = await _categoryService.GetAllActiveCategoriesAsync();
+            return Ok(activeCategories);
+        }
+
+        // PUT: api/category/{categoryId}/activate
+        [HttpPut("{categoryId:length(24)}/activate")]
+        public async Task<ActionResult> ActivateCategory(string categoryId)
+        {
+            try
+            {
+                await _categoryService.ActivateCategoryAsync(categoryId);
+                return Ok(new { message = "Category activated successfully" });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+        }
+
+        // PUT: api/category/{categoryId}/deactivate
+        [HttpPut("{categoryId:length(24)}/deactivate")]
+        public async Task<ActionResult> DeactivateCategory(string categoryId)
+        {
+            try
+            {
+                await _categoryService.DeactivateCategoryAsync(categoryId);
+                return Ok(new { message = "Category deactivated successfully" });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+        }
+
+        // GET: api/products/searchByCategory?categoryName=categoryName
+        [HttpGet("/api/products/searchByCategory")]
+        public async Task<ActionResult<List<Product>>> SearchProductsByCategoryName([FromQuery] string categoryName)
+        {
+            try
+            {
+                var products = await _categoryService.SearchProductsByCategoryNameAsync(categoryName);
+                if (products == null || products.Count == 0)
+                {
+                    return NotFound(new { message = "No products found in the specified category" });
+                }
+
+                return Ok(products);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+        }
+
+        // PUT: api/category/{id}/name
+        [HttpPut("{id:length(24)}/name")]
+        public async Task<ActionResult> UpdateCategoryName(string id, [FromBody] string newName)
+        {
+            try
+            {
+                await _categoryService.UpdateCategoryNameAsync(id, newName);
+                return Ok(new { message = "Category name updated successfully" });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+        }
+
+        // DELETE: api/category/{id}
+        [HttpDelete("{id:length(24)}")]
+        public async Task<ActionResult> DeleteCategory(string id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+
+            if (category == null)
+            {
+                return NotFound(new { message = "Category not found" });
+            }
+
+            // Check if the category contains any products
+            if (category.Products.Count > 0)
+            {
+                return BadRequest(new { message = "Category cannot be deleted because it contains products" });
+            }
+
+            // Delete the category
+            await _categoryService.DeleteCategoryAsync(id);
+
+            return Ok(new { message = "Category deleted successfully" });
+        }
 
 
     }

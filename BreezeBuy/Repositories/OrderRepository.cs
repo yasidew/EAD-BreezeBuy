@@ -32,5 +32,9 @@ namespace BreezeBuy.Repositories
 
         public async Task DeleteOrderAsync(string id) =>
             await _orders.DeleteOneAsync(o => o.Id == id);
+
+        // Add this method to fetch orders by customerId
+        public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerId) =>
+            await _orders.Find(order => order.CustomerId == customerId).ToListAsync();
     }
 }

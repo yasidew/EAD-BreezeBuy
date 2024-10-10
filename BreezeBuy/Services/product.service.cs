@@ -20,13 +20,57 @@ namespace BreezeBuy.Services
             _categoryService = categoryService; // Properly inject the CategoryService here
         }
 
-        // Get all products
-        public async Task<List<Product>> GetAllProductsAsync() =>
-            await _productCollection.Find(product => true).ToListAsync();
+
+public async Task<List<Product>> GetAllProductsIncludingInactiveAsync() =>
+    await _productCollection.Find(product => true).ToListAsync();
+
+
+        public async Task<List<Product>> GetAllProductsAsync()
+{
+    // Fetch all categories
+    var categories = await _categoryService.GetAllCategoriesAsync();
+
+    // Get IDs of active categories
+    var activeCategoryIds = categories
+        .Where(category => category.IsActive)
+        .Select(category => category.Id)
+        .ToList();
+
+    // Fetch all products, but only those belonging to active categories
+    return await _productCollection.Find(product => activeCategoryIds.Contains(product.CategoryId)).ToListAsync();
+}
+
 
         // Get product by ID
-        public async Task<Product> GetProductByIdAsync(string id) =>
-            await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+        // public async Task<Product> GetProductByIdAsync(string id) =>
+        //     await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+
+        // Get product by its ID, including validation of the category's active status
+public async Task<Product> GetValidatedProductByIdAsync(string id) =>
+    await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+
+
+public async Task<Product> GetProductByIdAsync(string id)
+{
+    // Fetch the product by its ID
+    var product = await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+    
+    if (product == null)
+    {
+        return null; // Product doesn't exist
+    }
+
+    // Fetch the category associated with this product
+    var category = await _categoryService.GetCategoryByIdAsync(product.CategoryId);
+
+    // Check if the category is inactive
+    if (category == null || !category.IsActive)
+    {
+        return null; // Category is inactive or doesn't exist
+    }
+
+    return product; // Return the product if category is active
+}
 
 
         // Create a new product and add it to both the Product collection and the Category
@@ -109,6 +153,27 @@ namespace BreezeBuy.Services
             var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(productName, "i")); // Case-insensitive search
             return await _productCollection.Find(filter).ToListAsync();
         }
+
+        // Search for a product by name and ensure the category is active
+public async Task<List<Product>> SearchProductsByNameWithActiveCategoryAsync(string name)
+{
+    // Perform a case-insensitive search for products by name
+    var filter = Builders<Product>.Filter.Regex("Name", new MongoDB.Bson.BsonRegularExpression(name, "i"));
+    var products = await _productCollection.Find(filter).ToListAsync();
+
+    // Fetch all categories
+    var categories = await _categoryService.GetAllCategoriesAsync();
+
+    // Get IDs of active categories
+    var activeCategoryIds = categories
+        .Where(category => category.IsActive)
+        .Select(category => category.Id)
+        .ToList();
+
+    // Filter products whose categories are active
+    return products.Where(product => activeCategoryIds.Contains(product.CategoryId)).ToList();
+}
+
 
 
     }
