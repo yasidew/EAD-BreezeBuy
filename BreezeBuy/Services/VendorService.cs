@@ -1,4 +1,15 @@
-﻿using BreezeBuy.Dto;
+﻿/*
+ * VendorService.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ 
+ * The VendorService class manages operations related to 
+ * vendors, including creating, updating, deleting, and 
+ * retrieving vendor details. It also handles adding feedback, 
+ * updating comments, and sorting vendors by their average ratings, 
+ * all within a MongoDB context.
+ */
+
+using BreezeBuy.Dto;
 using BreezeBuy.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -82,6 +93,7 @@ namespace BreezeBuy.Services
 			return await _vendorCollection.Find(v => v.Id == vendorId).FirstOrDefaultAsync();
 		}
 
+		// Get all feedbacks given by a customer across multiple vendors
 		public async Task<List<CustomerFeedbackDto>> GetCustomerFeedbacksAsync(string customerId)
 		{
 			var filter = Builders<Vendor>.Filter.ElemMatch(v => v.Comments, c => c.CustomerId == customerId);
@@ -105,6 +117,7 @@ namespace BreezeBuy.Services
 			return customerFeedbacks;
 		}
 
+		// Get a specific feedback comment by vendorId and commentId
 		public async Task<Comment> GetFeedbackAsync(string vendorId, string commentId)
 		{
 			var vendor = await _vendorCollection.Find(v => v.Id == vendorId).FirstOrDefaultAsync();
@@ -117,6 +130,7 @@ namespace BreezeBuy.Services
 			return null; // Return null if vendor or comment doesn't exist
 		}
 
+		// Get a list of vendors sorted by their average rating in descending order
 		public async Task<List<Vendor>> GetVendorsSortedByRatingAsync()
 		{
 			// Sort vendors by AverageRating in descending order

@@ -1,4 +1,17 @@
-﻿using BreezeBuy.Models;
+﻿/*
+ * VendorController.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * The VendorController manages vendor-related operations, 
+   including creating, updating, retrieving, and deleting 
+   vendor profiles, as well as handling customer feedback. 
+   It also provides functionality to fetch vendor details, 
+   sort vendors by ratings, and allow customers to edit and 
+   view their feedback.
+ 
+ */
+
+
+using BreezeBuy.Models;
 using BreezeBuy.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +30,7 @@ namespace BreezeBuy.Controllers
 			_vendorService = vendorService;
 		}
 
-		// Get all vendors: GET api/vendor
+		// Get all vendors: Retrieves a list of all vendorss: GET api/vendor
 		[HttpGet]
 		public async Task<ActionResult<List<Vendor>>> Get()
 		{
@@ -25,7 +38,7 @@ namespace BreezeBuy.Controllers
 			return Ok(vendors);
 		}
 
-		// Get vendor by id: GET api/vendor/{id}
+		// Retrieves vendor details using the userId: GET api/vendor/{id}
 		[HttpGet("{userId:length(24)}", Name = "GetVendor")]
 		public async Task<ActionResult<Vendor>> GetById(string userId)
 		{
@@ -37,7 +50,7 @@ namespace BreezeBuy.Controllers
 			return Ok(vendor);
 		}
 
-		// Get vendor by id: GET api/vendor/{id}
+		// Retrieves vendor details using the vendor's unique id: GET api/vendor/{id}
 		[HttpGet("v1/{id:length(24)}", Name = "GetVendorDetail")]
 		public async Task<ActionResult<Vendor>> GetOneById(string id)
 		{
@@ -57,7 +70,7 @@ namespace BreezeBuy.Controllers
 			return CreatedAtRoute("GetVendorDetail", new { id = newVendor.Id.ToString() }, newVendor);
 		}
 
-		// Update vendor: PUT api/vendor/{id}
+		// Updates an existing vendor's details: PUT api/vendor/{id}
 		[HttpPut("{id:length(24)}")]
 		public async Task<ActionResult> Update(string id, Vendor updatedVendor)
 		{
@@ -70,7 +83,7 @@ namespace BreezeBuy.Controllers
 			return Ok(new { message = "Vendor updated successfully" });
 		}
 
-		// Delete vendor: DELETE api/vendor/{id}
+		// Deletes a vendor based on the vendor id: DELETE api/vendor/{id}
 		[HttpDelete("{id:length(24)}")]
 		public async Task<ActionResult> Delete(string id)
 		{
@@ -83,30 +96,27 @@ namespace BreezeBuy.Controllers
 			return Ok(new { message = "Vendor deleted successfully" });
 		}
 
-		// POST api/vendor/{vendorId}/feedback
+		//Adds feedback from a customer to a vendor: POST api/vendor/{vendorId}/feedback
 		[HttpPost("{vendorId}/feedback")]
 		public async Task<IActionResult> AddFeedback(string vendorId, [FromBody] Comment feedback)
 		{
-			// Get customer ID from logged-in user claims
 			var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (string.IsNullOrEmpty(customerId))
 			{
 				return Unauthorized();
 			}
 
-			// Set the feedback's customer ID and initial editable status
 			feedback.CustomerId = customerId;
-			feedback.IsCommentEditable = true; // Comment is editable when first added
+			feedback.IsCommentEditable = true;
 
 			await _vendorService.AddFeedbackAsync(vendorId, feedback);
 			return Ok(new { message = "Feedback added successfully" });
 		}
 
-		// PUT api/vendor/{vendorId}/feedback/{commentId}
+		// Edits an existing customer feedback comment: PUT api/vendor/{vendorId}/feedback/{commentId}
 		[HttpPut("{vendorId}/feedback/{commentId}")]
 		public async Task<IActionResult> EditComment(string vendorId, string commentId, [FromBody] string updatedComment)
 		{
-			// Ensure the user editing is the owner of the comment
 			var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (string.IsNullOrEmpty(customerId))
 			{
@@ -118,7 +128,7 @@ namespace BreezeBuy.Controllers
 		}
 
 
-		// GET api/vendor/{vendorId}
+		// Retrieves a vendor and their associated customer feedbacks: GET api/vendor/{vendorId}
 		[HttpGet("{vendorId}")]
 		public async Task<ActionResult<Vendor>> GetVendor(string vendorId)
 		{
@@ -130,18 +140,17 @@ namespace BreezeBuy.Controllers
 			return Ok(vendor);
 		}
 
+		//Retrieves all feedbacks given by the logged-in customer
 		[HttpGet("customer/feedbacks")]
 		[Authorize]
 		public async Task<IActionResult> GetCustomerFeedbacks()
 		{
-			// Get customer ID from logged-in user claims
 			var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (string.IsNullOrEmpty(customerId))
 			{
 				return Unauthorized();
 			}
 
-			// Fetch customer feedbacks
 			var feedbacks = await _vendorService.GetCustomerFeedbacksAsync(customerId);
 
 			if (feedbacks == null || !feedbacks.Any())
@@ -152,18 +161,16 @@ namespace BreezeBuy.Controllers
 			return Ok(feedbacks);
 		}
 
-		// GET api/vendor/{vendorId}/feedback/{commentId}
+		// Retrieves a specific comment based on vendorId and commentId: GET api/vendor/{vendorId}/feedback/{commentId}
 		[HttpGet("{vendorId}/feedback/{commentId}")]
 		public async Task<IActionResult> GetFeedback(string vendorId, string commentId)
 		{
-			// Ensure the user is authenticated
 			var customerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (string.IsNullOrEmpty(customerId))
 			{
 				return Unauthorized();
 			}
 
-			// Fetch the feedback using the service
 			var comment = await _vendorService.GetFeedbackAsync(vendorId, commentId);
 
 			if (comment == null)
@@ -171,10 +178,10 @@ namespace BreezeBuy.Controllers
 				return NotFound(new { message = "Comment not found" });
 			}
 
-			// Return the feedback as a response
 			return Ok(comment);
 		}
 
+		// Retrieves vendors sorted by their average rating
 		[HttpGet("sorted-vendors")]
 		public async Task<IActionResult> GetSortedVendors()
 		{

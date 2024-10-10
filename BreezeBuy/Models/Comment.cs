@@ -1,4 +1,10 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/*
+ * Comment.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * The Comment class represents a customer feedback comment,
+ */
+
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
 namespace BreezeBuy.Models

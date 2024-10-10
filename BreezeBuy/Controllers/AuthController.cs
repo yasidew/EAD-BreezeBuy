@@ -1,3 +1,13 @@
+/*
+ * AuthController.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * This controller handles user authentication and account management, 
+   including registration, login, account activation, and deactivation 
+   for a MongoDB-based application. It also allows for updating user details 
+   and supports role-based authorization for certain actions. 
+ 
+ */
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -26,10 +36,10 @@ namespace BreezeBuy.Controllers
             _userCollection = context.Users;
             _jwtSettings = jwtSettings.Value;
         }
- 
-		// Register Api Endpoint
+
+		// Registers a new user with hashed password and stores it in the database
 		// "https://localhost:7260/Auth/register"
- 
+
 		[HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
@@ -44,8 +54,8 @@ namespace BreezeBuy.Controllers
             await _userCollection.InsertOneAsync(user);
             return Ok();
         }
- 
-		// Login Api Endpoint
+
+		// Authenticates a user and generates a JWT token if valid credentials are provided
 		// "https://localhost:7260/Auth/login"
 		[HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -84,8 +94,8 @@ namespace BreezeBuy.Controllers
  
             return Ok(new { Token = tokenString });
         }
- 
-		// Current User
+
+		// Returns the details of the currently logged-in user based on the JWT token
 		// "https://localhost:7260/Auth/me"
 		[HttpGet("me")]
 		public async Task<IActionResult> GetLoggedInUser()
@@ -100,7 +110,6 @@ namespace BreezeBuy.Controllers
 			}
  
  
-			// Optionally fetch full user details from the database using userId
 			var user = await _userCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 			if (user == null)
 			{
@@ -115,7 +124,8 @@ namespace BreezeBuy.Controllers
 				Roles = user.Roles
 			});
 		}
- 
+
+		// Allows the logged-in user to update their username, email, or password
 		[Authorize]
 		[HttpPut("update")]
 		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserModel model)
@@ -128,26 +138,22 @@ namespace BreezeBuy.Controllers
 				return BadRequest("UserId not found in token");
 			}
  
-			// Fetch the current user from the database
 			var user = await _userCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 			if (user == null)
 			{
 				return NotFound("User not found");
 			}
  
-			// Update the username if provided
 			if (!string.IsNullOrEmpty(model.Username))
 			{
 				user.Username = model.Username;
 			}
  
-			// Update the email if provided
 			if (!string.IsNullOrEmpty(model.Email))
 			{
 				user.Email = model.Email;
 			}
  
-			// Handle password change
 			if (!string.IsNullOrEmpty(model.NewPassword) && !string.IsNullOrEmpty(model.ConfirmNewPassword))
 			{
 				if (string.IsNullOrEmpty(model.CurrentPassword))
@@ -161,17 +167,14 @@ namespace BreezeBuy.Controllers
 					return Unauthorized("Current password is incorrect.");
 				}
  
-				// Ensure new password and confirmation match
 				if (model.NewPassword != model.ConfirmNewPassword)
 				{
 					return BadRequest("New password and confirmation do not match.");
 				}
  
-				// Hash and update the new password
 				user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 			}
  
-			// Update the user record in the database
 			await _userCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
  
 			return Ok(new
@@ -182,8 +185,8 @@ namespace BreezeBuy.Controllers
 				Message = "User details updated successfully."
 			});
 		}
- 
-		
+
+		// Deactivates the currently logged-in user's account
 		[Authorize]
 		[HttpPut("deactivateAccount")]
 		public async Task<IActionResult> DeactivateAccount()
@@ -195,23 +198,19 @@ namespace BreezeBuy.Controllers
 				return BadRequest("UserId not found in token");
 			}
  
-			// Fetch the user from the database
 			var user = await _userCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 			if (user == null)
 			{
 				return NotFound("User not found");
 			}
  
-			// Check if the user is currently active
 			if (user.Status != "active")
 			{
 				return BadRequest("Only active accounts can be deactivated.");
 			}
  
-			// Set the status to "deactivated"
 			user.Status = "deactivated";
  
-			// Update the user in the database
 			await _userCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
  
 			return Ok(new
@@ -222,15 +221,14 @@ namespace BreezeBuy.Controllers
 				Message = "Account successfully deactivated."
 			});
 		}
- 
-		
- 
 
+
+
+		// Allows a CSR to activate a deactivated customer account
 		[Authorize(Roles = "CSR")]
 		[HttpPut("activateCustomerAccount")]
 		public async Task<IActionResult> ActivateCustomerAccount([FromBody] ActivateAccountRequest request)
 		{
-			// Ensure a CSR is performing the action
 			var csrUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
  
 			if (string.IsNullOrEmpty(csrUserId))
@@ -243,7 +241,6 @@ namespace BreezeBuy.Controllers
 				return BadRequest("CustomerId is required");
 			}
  
-			// Fetch the customer from the database using the provided customerId
 			var customer = await _userCollection.Find(u => u.Id == request.CustomerId).FirstOrDefaultAsync();
  
 			if (customer == null)
@@ -251,16 +248,13 @@ namespace BreezeBuy.Controllers
 				return NotFound("Customer not found");
 			}
  
-			// Check if the customer's account is deactivated
 			if (customer.Status != "deactivated")
 			{
 				return BadRequest("Only deactivated accounts can be activated.");
 			}
  
-			// Set the customer's status to "active"
 			customer.Status = "active";
  
-			// Update the customer status in the database
 			await _userCollection.ReplaceOneAsync(u => u.Id == customer.Id, customer);
  
 			return Ok(new
@@ -271,7 +265,8 @@ namespace BreezeBuy.Controllers
 				Message = "Customer account successfully activated by CSR."
 			});
 		}
- 
+
+		// Allows the logged-in user to reactivate their own deactivated account
 		[Authorize]
 		[HttpPut("activateAccount")]
 		public async Task<IActionResult> ActivateAccount()
@@ -283,23 +278,19 @@ namespace BreezeBuy.Controllers
 				return BadRequest("UserId not found in token");
 			}
  
-			// Fetch the user from the database
 			var user = await _userCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 			if (user == null)
 			{
 				return NotFound("User not found");
 			}
  
-			// Check if the user is currently deactivated
 			if (user.Status != "deactivated")
 			{
 				return BadRequest("Only deactivated accounts can be activated.");
 			}
  
-			// Set the status to "active"
 			user.Status = "active";
  
-			// Update the user in the database
 			await _userCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
  
 			return Ok(new

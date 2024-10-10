@@ -1,4 +1,15 @@
-﻿using BreezeBuy.Models;
+﻿/*
+ * MongoDbContext.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * This MongoDbContext class sets up a connection to a 
+   MongoDB database using configuration settings for the 
+   connection string and database name. It exposes two collections, 
+   Users and Roles, to interact with the corresponding MongoDB 
+   collections in the database.
+ 
+ */
+
+using BreezeBuy.Models;
 using MongoDB.Driver;
 
 namespace BreezeBuy.Data

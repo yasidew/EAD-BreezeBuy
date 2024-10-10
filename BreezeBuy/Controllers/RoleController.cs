@@ -1,3 +1,12 @@
+/*
+ * RoleController.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * The RoleController manages user roles and provides functionality 
+   for assigning roles to users, retrieving a paginated list of users, 
+   and deleting a customer or vendor by username. 
+ 
+ */
+
 using BreezeBuy.Data;
 using BreezeBuy.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +28,7 @@ namespace BreezeBuy.Controllers
             _userCollection = context.Users;
         }
 
-		// Assign Role
+		// Assigns a role to a user if the user exists and the role is not already assigned
 		// "https://localhost:7260/Role/assign-role"
 		[HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleModel model)
@@ -39,6 +48,7 @@ namespace BreezeBuy.Controllers
             return Ok();
         }
 
+		// Retrieves a paginated list of users along with the total number of pages
 		[HttpGet("get-users")]
 		public async Task<IActionResult> GetUsers(int page = 1, int pageSize = 5)
 		{
@@ -59,6 +69,7 @@ namespace BreezeBuy.Controllers
 			});
 		}
 
+		// Deletes a customer or vendor by their username if they exist in the collection
 		[HttpDelete("delete-customer/{username}")]
 		public async Task<IActionResult> DeleteCustomer(string username)
 		{
