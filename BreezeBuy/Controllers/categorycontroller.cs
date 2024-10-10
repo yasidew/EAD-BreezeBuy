@@ -52,7 +52,6 @@ namespace BreezeBuy.Controllers
             }
         }
 
-    
         // GET: api/category/all (For all categories)
         [HttpGet("all")]
         public async Task<ActionResult<List<Category>>> GetAllCategoriesAsync()
