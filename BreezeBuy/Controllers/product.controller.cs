@@ -48,9 +48,6 @@ namespace BreezeBuy.Controllers
             }
         }
 
-
-
-
         [HttpGet("active")]
         public async Task<ActionResult<List<Product>>> GetActiveProducts()
         {
@@ -90,16 +87,16 @@ namespace BreezeBuy.Controllers
         // }
 
         // GET: api/Product/{id}
-[HttpGet("byid/{id:length(24)}", Name = "GetProductById")]
-public async Task<ActionResult<Product>> GetProductById(string id)
-{
-    var product = await _productService.GetValidatedProductByIdAsync(id);
-    if (product == null)
-    {
-        return NotFound("Product not found or its category is inactive.");
-    }
-    return Ok(product);
-}
+        [HttpGet("byid/{id:length(24)}", Name = "GetProductById")]
+        public async Task<ActionResult<Product>> GetProductById(string id)
+        {
+            var product = await _productService.GetValidatedProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound("Product not found or its category is inactive.");
+            }
+            return Ok(product);
+        }
 
 
         // GET: api/product/{id}
@@ -170,19 +167,19 @@ public async Task<ActionResult<Product>> GetProductById(string id)
         }
 
         // GET: api/product/search?name={productName}
-[HttpGet("search/active")]
-public async Task<ActionResult<List<Product>>> SearchByNameWithActiveCategory(string name)
-{
-    // Search for products by name and ensure their categories are active
-    var products = await _productService.SearchProductsByNameWithActiveCategoryAsync(name);
+        [HttpGet("search/active")]
+        public async Task<ActionResult<List<Product>>> SearchByNameWithActiveCategory(string name)
+        {
+            // Search for products by name and ensure their categories are active
+            var products = await _productService.SearchProductsByNameWithActiveCategoryAsync(name);
 
-    if (products == null || products.Count == 0)
-    {
-        return NotFound(new { message = "No active products found with the given name." });
-    }
+            if (products == null || products.Count == 0)
+            {
+                return NotFound(new { message = "No active products found with the given name." });
+            }
 
-    return Ok(products);
-}
+            return Ok(products);
+        }
 
 
 
