@@ -17,7 +17,6 @@ namespace BreezeBuy.Controllers
             _categoryService = categoryService;
         }
 
-
         // GET: api/category/{id}
         [HttpGet("{id:length(24)}", Name = "GetCategory")]
         public async Task<ActionResult<Category>> GetById(string id)
