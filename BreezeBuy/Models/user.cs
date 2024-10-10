@@ -1,3 +1,10 @@
+/*
+ * user.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ 
+ * The User class represents a user in the system
+ */
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

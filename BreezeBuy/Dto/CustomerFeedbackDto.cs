@@ -1,4 +1,11 @@
-﻿namespace BreezeBuy.Dto
+﻿/*
+ * CustomerFeedbackDto.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ * The CustomerFeedbackDto class is a data transfer object (DTO) that holds information about customer feedback
+ 
+ */
+
+namespace BreezeBuy.Dto
 {
 	public class CustomerFeedbackDto
 	{

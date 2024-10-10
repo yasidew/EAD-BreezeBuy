@@ -1,3 +1,9 @@
+/*
+ * RegisterModel.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ 
+ * The RegisterModel class represents the data required for user registration
+ */
 
 namespace BreezeBuy.Models
 {

@@ -1,3 +1,11 @@
+/*
+ * Role.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ 
+ * The Role class represents a role in the system
+ */
+
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

@@ -1,4 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/*
+ * Vendor.cs
+ * Author: [Dayananda I.H.M.B.L. | IT21307058]
+ 
+ * The Vendor class represents a vendor in the system,
+ */
+
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
 namespace BreezeBuy.Models
