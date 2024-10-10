@@ -118,7 +118,6 @@ namespace BreezeBuy.Controllers
             }
         }
 
-        // PUT: api/category/{id}
         // PUT: api/category/{id}/name
         [HttpPut("{id:length(24)}/name")]
         public async Task<ActionResult> UpdateCategoryName(string id, [FromBody] string newName)
