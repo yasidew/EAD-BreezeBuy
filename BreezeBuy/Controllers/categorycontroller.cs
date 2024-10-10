@@ -144,7 +144,7 @@ namespace BreezeBuy.Controllers
                 return NotFound(new { message = "Category not found" });
             }
 
-            // Check if the category contains any products
+            // Check if the category contains any 
             if (category.Products.Count > 0)
             {
                 return BadRequest(new { message = "Category cannot be deleted because it contains products" });
