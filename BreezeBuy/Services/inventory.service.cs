@@ -1,3 +1,9 @@
+// InventoryService.cs
+// This service manages inventory-related operations, including CRUD functionality, low stock alerts, 
+// integration with the ProductService, and updates to inventory levels based on orders. 
+// Author: [Yasitha Dewmin | IT21440922]
+
+
 using BreezeBuy.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -66,6 +72,7 @@ namespace BreezeBuy.Services
             var inventory = await _inventoryCollection.Find(inventory => inventory.Id == id).FirstOrDefaultAsync();
             if (inventory != null)
             {
+                // Get product details from ProductService
                 var product = await _productService.GetProductByIdAsync(inventory.ItemId);
                 if (product != null)
                 {
@@ -185,6 +192,7 @@ namespace BreezeBuy.Services
         // Get low stock items
         public async Task<List<InventoryResponse>> GetLowStockItemsAsync()
         {
+            // Find all items with quantity available below the reorder level
             var lowStockItems = await _inventoryCollection.Find(inventory => inventory.QuantityAvailable < inventory.ReoderLevel).ToListAsync();
             var lowStockResponses = new List<InventoryResponse>();
 
@@ -252,8 +260,11 @@ namespace BreezeBuy.Services
             }
         }
 
+
+        // Search inventory items
         public async Task<List<InventoryResponse>> SearchInventoryAsync(string searchTerm)
         {
+            // Search by product name, product ID, quantity available, or reorder level
             var filter = Builders<Inventory>.Filter.Or(
                 Builders<Inventory>.Filter.Regex("productName", new BsonRegularExpression(searchTerm, "i")),
                 Builders<Inventory>.Filter.Regex("productId", new BsonRegularExpression(searchTerm, "i")),
