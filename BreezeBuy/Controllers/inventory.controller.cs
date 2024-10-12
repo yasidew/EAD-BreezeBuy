@@ -1,3 +1,9 @@
+// InventoryController.cs
+// This controller manages API endpoints for inventory operations, such as retrieving,
+// creating, updating, and deleting inventory items. It communicates with the InventoryService
+// to process inventory data.
+// Author: [Yasitha Dewmin | IT21440922]
+
 using BreezeBuy.Models;
 using BreezeBuy.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +83,7 @@ namespace BreezeBuy.Controllers
         //     return CreatedAtRoute("GetInventory", new { id = newInventory.Id.ToString() }, newInventory);
         // }
 
+        // Post : api/inventory
         [HttpPost]
         public async Task<ActionResult<InventoryResponse>> Create(Inventory newInventory)
         {
@@ -86,6 +93,8 @@ namespace BreezeBuy.Controllers
             {
                 return BadRequest(new { message = "Product not found." });
             }
+
+            // newInventory.QuantityAvailable = product.Quantity;
 
             // Check if the inventory item with the same custom ProductID already exists
             var existingInventory = await _inventoryService.GetByProductIdAsync(newInventory.ProductId);
