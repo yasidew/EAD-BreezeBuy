@@ -126,22 +126,50 @@ namespace BreezeBuy.Controllers
             return NoContent();
         }
 
+        // [HttpPut("deliver/{id:length(24)}")]
+        // public async Task<IActionResult> DeliverOrder(string id)
+        // {
+        //     var order = await _orderService.GetOrderByIdAsync(id);
+
+        //     if (order == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     // Set order status to "delivered"
+        //     order.Status = "delivered";
+        //     await _orderService.UpdateOrderAsync(id, order);
+
+        //     return NoContent();
+        // }
+
         [HttpPut("deliver/{id:length(24)}")]
-        public async Task<IActionResult> DeliverOrder(string id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
+public async Task<IActionResult> DeliverOrder(string id)
+{
+    // Fetch the order by ID
+    var order = await _orderService.GetOrderByIdAsync(id);
 
-            if (order == null)
-            {
-                return NotFound();
-            }
+    // If order not found, return 404 Not Found
+    if (order == null)
+    {
+        return NotFound();
+    }
 
-            // Set order status to "delivered"
-            order.Status = "delivered";
-            await _orderService.UpdateOrderAsync(id, order);
+    // Preserve the existing total payment and other important fields
+    var existingTotalPayment = order.TotalPayment;
 
-            return NoContent();
-        }
+    // Set the status to "delivered"
+    order.Status = "delivered";
+
+    // Ensure the total payment is not changed
+    order.TotalPayment = existingTotalPayment;
+
+    // Update the order with the new status
+    await _orderService.UpdateOrderAsync(id, order);
+
+    return NoContent(); // Return a successful response
+}
+
 
          [HttpGet("customer/{customerId:length(24)}")]
         public async Task<ActionResult<List<Order>>> GetOrdersByCustomerId(string customerId)
