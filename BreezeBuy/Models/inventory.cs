@@ -1,4 +1,9 @@
-// This file contains the model for the Inventory. It contains the properties of the Inventory.
+// Inventory.cs
+// This file contains the Inventory model, defining properties of each inventory item, 
+// including product ID, quantity, reorder level, and timestamps.
+// This model is used for CRUD operations in the inventory service.
+// Author: [Yasitha Dewmin | IT21440922]
+
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
