@@ -43,14 +43,9 @@
 3. **Frontend Setup**:
    - Install the required dependencies and run the development server:
      ```bash
+     git clone https://github.com/yasidew/BreezeBuy-Frontend.git
      npm install
      npm start
      ```
-
-## Project Structure
-- **/backend**: Contains the .NET Core API for server-side operations.
-- **/frontend**: React-based client-side code for the user interface.
-- **/database**: MongoDB configuration and seed data scripts (if applicable).
-- 
 ---
 
